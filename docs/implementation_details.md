@@ -205,3 +205,36 @@
 - Add richer prerequisite metadata once downstream modules ship.
 - Introduce automated MDX linting or content schema validation to ensure every
   module includes the required sections.
+
+## Issue 1.3.2 – Interactive Visualization Framework (2025-09-24)
+
+### Summary
+
+- Set up a reusable visualization container with export controls, accessibility
+  labelling, and responsive layout.
+- Added slider and toggle control components to manage visualization parameters
+  from the UI.
+- Implemented a D3.js policy reward chart leveraging the new framework and
+  embedded it in the Introduction module.
+
+### Architecture Notes
+
+- Visualization infrastructure lives under `src/components/visualizations/`
+  (container, controls, D3 charts).
+- `VisualisationContainer` handles PNG/SVG exports using `html-to-image` and DOM
+  serialization.
+- `PolicyImprovementChart` demonstrates D3 integration with React state,
+  responding to KL penalty changes while keeping SSR-friendly hooks.
+
+### Testing & Verification
+
+- `npm run lint`
+- `npx tsc --noEmit --incremental false`
+- Manual testing of the slider/toggle responsiveness and export buttons across
+  breakpoints.
+
+### Follow-ups
+
+- Add more visualization types (preference comparisons, PPO updates) using the
+  same framework.
+- Consider lazy loading D3-heavy components if bundle size becomes a concern.

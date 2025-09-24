@@ -10,6 +10,7 @@ import {
 } from '@/components/modules/module-layout';
 import { MathBlock } from '@/components/modules/math-block';
 import { MathInline } from '@/components/modules/math-inline';
+import { PolicyImprovementChart } from '@/components/visualizations/policy-improvement-chart';
 
 <EquationSection id="equation" title="RLHF Training Objective">
   The RLHF fine-tuning objective balances reward model scores with a KL term that
@@ -83,6 +84,7 @@ import { MathInline } from '@/components/modules/math-inline';
     <a href="/modules/reward-modeling">Reward Modeling</a> and
     <a href="/modules/policy-gradients">Policy Gradients</a> modules once they go live.
   </ModuleCallout>
+  <PolicyImprovementChart />
 </VisualizationSection>
 
 <TakeawaysSection id="takeaways" title="Key Takeaways">
