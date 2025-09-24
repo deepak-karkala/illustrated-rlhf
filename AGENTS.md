@@ -1,4 +1,4 @@
-# CLAUDE.md - Coding Guidelines for RLHF Illustrated Guide
+# AGENTS.md - Coding Guidelines for RLHF Illustrated Guide
 
 ## 🎯 Project Overview
 

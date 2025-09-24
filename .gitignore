@@ -170,7 +170,7 @@ $RECYCLE.BIN/
 /docs/build/
 .docusaurus/
 .serverless/
-context/
+#context/
 
 # Backup files
 *.bak
