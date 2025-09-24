@@ -1,4 +1,4 @@
-import { useAnalogyDetails } from '@/lib/analogy-context';
+import { getAnalogyMetadata } from '@/lib/module-utils';
 import type { AnalogyType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -8,7 +8,7 @@ interface AnalogyPillProps {
 }
 
 export function AnalogyPill({ type, className }: AnalogyPillProps): JSX.Element {
-  const details = useAnalogyDetails(type);
+  const details = getAnalogyMetadata(type);
 
   return (
     <span

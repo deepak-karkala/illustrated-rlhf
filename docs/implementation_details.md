@@ -172,3 +172,36 @@
   artwork.
 - Consider lazy loading Framer Motion visuals when they move off-screen to
   further optimize long pages.
+
+## Issue 1.3.1 – Chapter Template System (2025-09-24)
+
+### Summary
+
+- Wired MDX into the App Router with remark-math/rehype-katex so modules can
+  embed equations and custom components.
+- Built a reusable `ModuleLayout` featuring a sticky table of contents, module
+  metadata rail, and previous/next navigation.
+- Authored the "Introduction to RLHF" module entirely in MDX using templated
+  sections (Equation, Intuition, Analogy, Visualization, Takeaways, Assessment).
+
+### Architecture Notes
+
+- `next.config.js` now wraps the base config with `@next/mdx` and math plugins.
+- Layout and section helpers live in `src/components/modules/module-layout.tsx`
+  with supporting metadata in `src/lib/modules.ts` and dynamic imports in
+  `src/lib/module-content.ts`.
+- KaTeX CSS loads globally via the app layout, and print-friendly utilities were
+  added to `globals.css`.
+
+### Testing & Verification
+
+- `npm run lint`
+- `npx tsc --noEmit --incremental false`
+- Manual review of `/modules/introduction` to confirm section anchors,
+  mathematical rendering, and navigation.
+
+### Follow-ups
+
+- Add richer prerequisite metadata once downstream modules ship.
+- Introduce automated MDX linting or content schema validation to ensure every
+  module includes the required sections.

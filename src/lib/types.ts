@@ -24,20 +24,20 @@ export interface ModuleMetadata {
   tags: string[];
 }
 
-export interface ChapterSection {
-  id: string;
-  type: 'equation' | 'intuition' | 'analogy' | 'visualization' | 'takeaways' | 'assessment';
-  title: string;
-  content: string;
-  interactive_elements?: InteractiveElement[];
-}
+export type ModuleSectionType =
+  | 'equation'
+  | 'intuition'
+  | 'analogy'
+  | 'visualization'
+  | 'takeaways'
+  | 'assessment';
 
-export interface InteractiveElement {
+export interface ModuleSectionDefinition {
   id: string;
-  type: 'slider' | 'toggle' | 'button' | 'input' | 'dropdown' | 'visualization';
-  label: string;
-  description?: string;
-  config: Record<string, any>;
+  type: ModuleSectionType;
+  title: string;
+  eyebrow?: string;
+  icon?: string;
 }
 
 export interface VisualizationConfig {
@@ -143,12 +143,6 @@ export interface AnalyticsEventData {
 export interface BaseComponentProps {
   className?: string;
   children?: React.ReactNode;
-}
-
-export interface ModuleComponentProps extends BaseComponentProps {
-  module: ModuleMetadata;
-  sections: ChapterSection[];
-  onProgress?: (progress: number) => void;
 }
 
 export interface VisualizationComponentProps extends BaseComponentProps {

@@ -1,9 +1,12 @@
-import type { ModuleMetadata } from '@/lib/types';
+import type { ModuleMetadata, ModuleSectionDefinition } from '@/lib/types';
 
-interface ModuleNavItem extends ModuleMetadata {
+export interface ModuleNavItem extends ModuleMetadata {
   slug: string;
+  summary: string;
+  order: number;
   progress: number;
   status: 'available' | 'coming-soon';
+  sections: ModuleSectionDefinition[];
 }
 
 export const MODULES: ModuleNavItem[] = [
@@ -18,8 +21,49 @@ export const MODULES: ModuleNavItem[] = [
     estimated_time: 20,
     difficulty: 'beginner',
     tags: ['overview', 'rlhf'],
+    summary:
+      'Learn why RLHF emerged, its training loop, and how preferences become better policies.',
+    order: 1,
     progress: 20,
     status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'RLHF Training Objective',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'Why Human Feedback Matters',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Writing Coach & Arcade Bot',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'The RLHF Loop',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Key Takeaways',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Quick Self-Check',
+        eyebrow: 'Assessment',
+      },
+    ],
   },
   {
     id: 'module-reward-modeling',
@@ -32,8 +76,11 @@ export const MODULES: ModuleNavItem[] = [
     estimated_time: 35,
     difficulty: 'intermediate',
     tags: ['reward-model', 'preferences'],
+    summary: 'Teach a reward model to score completions using pairwise human preference datasets.',
+    order: 2,
     progress: 0,
     status: 'coming-soon',
+    sections: [],
   },
   {
     id: 'module-ppo',
@@ -46,8 +93,11 @@ export const MODULES: ModuleNavItem[] = [
     estimated_time: 40,
     difficulty: 'intermediate',
     tags: ['policy', 'ppo'],
+    summary: 'Walk through PPO and why it stabilises post-training policy updates.',
+    order: 3,
     progress: 0,
     status: 'coming-soon',
+    sections: [],
   },
 ];
 
@@ -55,4 +105,28 @@ export function getModuleBySlug(slug: string): ModuleNavItem | undefined {
   return MODULES.find((moduleEntry) => moduleEntry.slug === slug);
 }
 
-export type { ModuleNavItem };
+export function getAdjacentModules(slug: string): {
+  previous?: ModuleNavItem;
+  next?: ModuleNavItem;
+} {
+  const available = MODULES.filter((entry) => entry.status === 'available');
+  const index = available.findIndex((entry) => entry.slug === slug);
+  if (index === -1) return {};
+  return {
+    previous: available[index - 1],
+    next: available[index + 1],
+  };
+}
+
+export function getModuleSummaries(): Pick<
+  ModuleNavItem,
+  'slug' | 'title' | 'description' | 'order' | 'sections'
+>[] {
+  return MODULES.map(({ slug, title, description, order, sections }) => ({
+    slug,
+    title,
+    description,
+    order,
+    sections,
+  }));
+}

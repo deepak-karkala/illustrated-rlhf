@@ -1,0 +1,108 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+  InlineDefinition,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+
+<EquationSection id="equation" title="RLHF Training Objective">
+  The RLHF fine-tuning objective balances reward model scores with a KL term that
+  keeps the policy close to the supervised reference model:
+
+  <MathBlock
+    expression={String.raw`\max_{\pi_\theta} \; \mathbb{E}_{(x, y) \sim \mathcal{D}_{\pi_\theta}}\left[r_\phi(x, y) - \beta \log \frac{\pi_\theta(y \mid x)}{\pi_{\mathrm{ref}}(y \mid x)}\right]`}
+  />
+
+  <ModuleCallout>
+    <strong>Notation.</strong>{' '}
+    <MathInline expression={String.raw`\pi_\theta`} /> is the policy we are training,
+    <MathInline expression={String.raw`r_\phi`} /> is a learned reward model and
+    <MathInline expression={String.raw`\pi_{\mathrm{ref}}`} /> is the supervised fine-tuned
+    (SFT) model that anchors behaviour. The scalar
+    <MathInline expression={String.raw`\beta`} /> controls how daring the policy can be
+    before drifting too far from SFT.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Why Human Feedback Matters">
+  <p>
+    Large language models excel at pattern matching but struggle to capture
+    human preferences directly from text corpora. RLHF introduces a feedback
+    loop: humans express which responses are better, a reward model imitates
+    those judgements, and policy optimisation nudges the model toward behaviour
+    people actually like. The KL penalty acts like a safety tether, ensuring the
+    policy explores new outputs without forgetting the supervised baseline.
+  </p>
+  <p>
+    In practice this loop transforms vague alignment goals into a concrete
+    optimisation surface. Instead of guessing what a "helpful" answer looks
+    like, the model receives dense reward signals derived from real comparisons.
+  </p>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Writing Coach Meets Arcade Bot">
+  <p>
+    Picture two characters from the analogy toolbox working together:
+  </p>
+  <ul>
+    <li>
+      <InlineDefinition term="Writing student">Drafts several completions and
+      listens to iterative editor feedback. The reward model stands in for that
+      editor, predicting which draft the human would prefer.</InlineDefinition>
+    </li>
+    <li>
+      <InlineDefinition term="Arcade bot">Treats each prompt like a level in a
+      retro game. The higher the reward model score, the better the "score" for
+      that level. The KL term is the invisible bumper keeping the bot from
+      crashing into weird, off-distribution moves.</InlineDefinition>
+    </li>
+  </ul>
+  <p>
+    Together they illustrate how RLHF blends human judgement (editor) with
+    reinforcement-style exploration (arcade bot) to polish model behaviour.
+  </p>
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="The RLHF Loop">
+  <ol>
+    <li>Collect prompts and generate candidate completions with the SFT model.</li>
+    <li>Ask humans to rank the completions. Store preference pairs.</li>
+    <li>Train a reward model $r_\phi$ to predict those preferences.</li>
+    <li>Optimise the policy $\pi_\theta$ with PPO/other RL algorithms using the
+        reward model and KL penalty.</li>
+    <li>Periodically refresh data and repeat, keeping humans in the loop.</li>
+  </ol>
+  <ModuleCallout>
+    Want to see the full loop animated? Jump over to the
+    <a href="/modules/reward-modeling">Reward Modeling</a> and
+    <a href="/modules/policy-gradients">Policy Gradients</a> modules once they go live.
+  </ModuleCallout>
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Key Takeaways">
+  <ul>
+    <li>RLHF adds a learned reward signal on top of supervised fine-tuning.</li>
+    <li>Human preference data is distilled into a reward model $r_\phi$.</li>
+    <li>The KL divergence keeps the policy grounded near the SFT model.</li>
+    <li>Analogy lenses (writer, tutor, arcade bot) make the loop easier to reason about.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Quick Self-Check">
+  <ol>
+    <li>Why is a KL penalty included in the RLHF objective?</li>
+    <li>What role does the reward model play compared to the human annotators?</li>
+    <li>Which analogy lens clicks best for you? Can you explain the loop using it?</li>
+  </ol>
+  <p className="text-sm text-muted-foreground">
+    (Answers: keep behaviour near the reference SFT model; scalably predict human
+    preference; choose any lens, but make sure you can narrate prompts &rarr; feedback &rarr;
+    updated policy!)
+  </p>
+</AssessmentSection>

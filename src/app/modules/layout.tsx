@@ -6,9 +6,7 @@ export default function ModulesLayout({ children }: { children: ReactNode }): JS
   return (
     <div className="flex flex-col gap-8 lg:flex-row">
       <SidebarNav />
-      <section className="flex-1">
-        <div className="space-y-6 rounded-xl border border-border bg-card/40 p-6">{children}</div>
-      </section>
+      <section className="flex-1 space-y-6">{children}</section>
     </div>
   );
 }
