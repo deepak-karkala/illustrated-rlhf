@@ -5,9 +5,11 @@ import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { AnalogyPill } from '@/components/analogies/analogy-pill';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
+import { useAnalogy } from '@/lib/analogy-context';
 import { MODULES, type ModuleNavItem } from '@/lib/modules';
 import { cn } from '@/lib/utils';
 
@@ -41,6 +43,7 @@ function getPhaseLabel(phase: ModuleNavItem['phase']): string {
 export function SidebarNav(): JSX.Element {
   const pathname = usePathname();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { activeAnalogy } = useAnalogy();
 
   const currentSlug = useMemo(() => {
     if (!pathname) return '';
@@ -78,6 +81,7 @@ export function SidebarNav(): JSX.Element {
         <ul className="mt-3 space-y-2">
           {navItems.map((item) => {
             const isActive = item.slug === currentSlug;
+            const matchesAnalogy = item.analogy === activeAnalogy;
             const indicatorClass = cn({
               'bg-analogy-writing-500': item.analogy === 'writing',
               'bg-analogy-reasoning-500': item.analogy === 'reasoning',
@@ -91,7 +95,8 @@ export function SidebarNav(): JSX.Element {
                   href={`/modules/${item.slug}`}
                   className={cn(
                     'block rounded-lg border border-transparent p-3 transition hover:border-border hover:bg-accent',
-                    isActive && 'border-border bg-accent/60'
+                    isActive && 'border-border bg-accent/60',
+                    matchesAnalogy ? 'ring-2 ring-inset ring-primary/40' : 'opacity-90'
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -116,6 +121,9 @@ export function SidebarNav(): JSX.Element {
                     <span className="text-xs text-muted-foreground">
                       {getPhaseLabel(item.phase)}
                     </span>
+                  </div>
+                  <div className="mt-2">
+                    <AnalogyPill type={item.analogy} />
                   </div>
                   <div className="mt-3">
                     <Progress value={item.progress} indicatorClassName={indicatorClass} />

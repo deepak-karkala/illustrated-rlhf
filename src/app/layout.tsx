@@ -6,6 +6,8 @@ import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { ThemeProvider } from '@/components/layout/theme-provider';
+import { AnalogySwitcherBar } from '@/components/analogies/analogy-switcher-bar';
+import { AnalogyProvider } from '@/lib/analogy-context';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -48,24 +50,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
         <ThemeProvider>
-          <div className="relative flex min-h-screen flex-col">
-            <a
-              href="#main-content"
-              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
-            >
-              Skip to main content
-            </a>
-            <SiteHeader />
+          <AnalogyProvider>
+            <div className="relative flex min-h-screen flex-col">
+              <a
+                href="#main-content"
+                className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2 focus:text-primary-foreground"
+              >
+                Skip to main content
+              </a>
+              <SiteHeader />
 
-            <main id="main-content" className="flex-1">
-              <div className="container px-4 py-6">
-                <Breadcrumbs />
-                {children}
-              </div>
-            </main>
+              <main id="main-content" className="flex-1">
+                <div className="container px-4 py-6 space-y-6">
+                  <AnalogySwitcherBar />
+                  <Breadcrumbs />
+                  {children}
+                </div>
+              </main>
 
-            <SiteFooter />
-          </div>
+              <SiteFooter />
+            </div>
+          </AnalogyProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -105,3 +105,36 @@
   state.
 - Expand sidebar grouping (Phase 2/3) when additional modules are authored;
   current implementation anticipates this via metadata.
+
+## Issue 1.2.1 – Analogy Context Framework (2025-09-24)
+
+### Summary
+
+- Added a React context to manage the active analogy and persist the choice in
+  `localStorage`.
+- Surface a global analogy switcher bar beneath the site header so learners can
+  change lenses without crowding the navigation.
+- Highlighted sidebar modules and introduced analogy pills to reinforce the
+  selected context.
+
+### Architecture Notes
+
+- `AnalogyProvider` (`src/lib/analogy-context.tsx`) wraps the global layout and
+  exposes `useAnalogy` / `useAnalogyDetails` hooks.
+- Switcher and pill components live in `src/components/analogies/`, reusing the
+  Tailwind analogy variants from `globals.css`.
+- `SidebarNav` now participates in the analogy context, decorating cards whose
+  analogy matches the active selection.
+
+### Testing & Verification
+
+- Manually toggled between analogy types to confirm persistence and visual
+  updates across header and sidebar.
+- `npm run lint` (blocked here because `.next/cache` is read-only in the
+  sandbox).
+
+### Follow-ups
+
+- Add a mobile-friendly selector presentation (current control stacks nicely but
+  could use affordances on very small screens).
+- Pipe analogy context into module content once narrative assets ship.
