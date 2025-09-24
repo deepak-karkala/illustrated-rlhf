@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 
+import { AnalogyShowcase } from '@/components/analogies/analogy-visuals';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const metadata: Metadata = {
   title: 'RLHF Illustrated Guide - Home',
@@ -35,43 +35,7 @@ export default function HomePage(): JSX.Element {
         </div>
       </section>
 
-      <section className="mb-12 grid gap-8 md:grid-cols-3">
-        <Card className="border-border">
-          <CardHeader>
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-analogy-atari-500 text-white">
-              🎮
-            </div>
-            <CardTitle>Interactive Learning</CardTitle>
-            <CardDescription>
-              Explore RLHF concepts through interactive visualizations and hands-on examples.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-border">
-          <CardHeader>
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-analogy-writing-500 text-white">
-              ✍️
-            </div>
-            <CardTitle>Intuitive Analogies</CardTitle>
-            <CardDescription>
-              Understand complex concepts through relatable analogies and visual metaphors.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-
-        <Card className="border-border">
-          <CardHeader>
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-analogy-reasoning-500 text-white">
-              🧮
-            </div>
-            <CardTitle>Comprehensive Coverage</CardTitle>
-            <CardDescription>
-              From basic concepts to advanced topics like Constitutional AI and reasoning training.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </section>
+      <AnalogyShowcase className="mb-12" />
 
       <section className="text-center">
         <h2 className="heading-2 mb-6">Learning Path</h2>

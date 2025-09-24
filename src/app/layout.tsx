@@ -6,7 +6,6 @@ import { Breadcrumbs } from '@/components/layout/breadcrumbs';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteHeader } from '@/components/layout/site-header';
 import { ThemeProvider } from '@/components/layout/theme-provider';
-import { AnalogySwitcherBar } from '@/components/analogies/analogy-switcher-bar';
 import { AnalogyProvider } from '@/lib/analogy-context';
 
 const inter = Inter({
@@ -62,7 +61,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }):
 
               <main id="main-content" className="flex-1">
                 <div className="container px-4 py-6 space-y-6">
-                  <AnalogySwitcherBar />
                   <Breadcrumbs />
                   {children}
                 </div>

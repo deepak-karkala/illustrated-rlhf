@@ -112,8 +112,8 @@
 
 - Added a React context to manage the active analogy and persist the choice in
   `localStorage`.
-- Surface a global analogy switcher bar beneath the site header so learners can
-  change lenses without crowding the navigation.
+- Allow learners to switch lenses directly from the analogy visuals grid,
+  keeping the navigation uncluttered.
 - Highlighted sidebar modules and introduced analogy pills to reinforce the
   selected context.
 
@@ -121,8 +121,8 @@
 
 - `AnalogyProvider` (`src/lib/analogy-context.tsx`) wraps the global layout and
   exposes `useAnalogy` / `useAnalogyDetails` hooks.
-- Switcher and pill components live in `src/components/analogies/`, reusing the
-  Tailwind analogy variants from `globals.css`.
+- Pill components live in `src/components/analogies/`, reusing the Tailwind
+  analogy variants from `globals.css`.
 - `SidebarNav` now participates in the analogy context, decorating cards whose
   analogy matches the active selection.
 
@@ -135,6 +135,40 @@
 
 ### Follow-ups
 
-- Add a mobile-friendly selector presentation (current control stacks nicely but
-  could use affordances on very small screens).
+- Provide a compact quick-toggle for very small screens if the grid controls
+  feel hidden.
 - Pipe analogy context into module content once narrative assets ship.
+
+## Issue 1.2.2 – Analogy Visual Components (2025-09-24)
+
+### Summary
+
+- Crafted animated visual cards for all four analogy contexts (Atari Bot,
+  Writing Student, Math Tutor, Advanced Concepts).
+- Wrapped the visuals in an `AnalogyShowcase` grid that responds to the active
+  analogy selection and drives the home page hero section.
+- Ensured the visuals rely on CSS/SVG gradients plus Framer Motion
+  micro-animations for performance-friendly motion.
+
+### Architecture Notes
+
+- Visual implementations live in `src/components/analogies/analogy-visuals.tsx`,
+  exporting `AnalogyShowcase` and individual card/visual primitives.
+- Cards reuse analogy metadata via `useAnalogyDetails` and update the global
+  context on selection to keep the experience consistent.
+- Home page (`src/app/page.tsx`) now renders the showcase directly, replacing
+  static emoji tiles.
+
+### Testing & Verification
+
+- `npm run lint`
+- `npx tsc --noEmit --incremental false`
+- Manual responsiveness check across small and medium breakpoints to confirm
+  grid collapse and animation smoothness.
+
+### Follow-ups
+
+- Add dedicated SVG illustration assets once design team supplies polished
+  artwork.
+- Consider lazy loading Framer Motion visuals when they move off-screen to
+  further optimize long pages.
