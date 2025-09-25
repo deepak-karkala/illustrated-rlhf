@@ -335,3 +335,39 @@
   available.
 - Extend the module with outcome/process reward case studies when additional
   chapters are published.
+
+## Issue 1.4.3 – Policy Gradients (PPO) Module (2025-09-26)
+
+### Summary
+
+- Published the PPO module aligned with Chapter 11 of the RLHF book, making it
+  available in the guide.
+- Added interactive visualisations for policy ratio trajectories (learning rate,
+  clip range, KL penalty) and a clipping demonstration contrasting PPO with
+  vanilla policy gradients.
+- Captured the clipped objective, Atari analogy, PyTorch training loop, and quiz
+  emphasising trust-region intuition.
+
+### Architecture Notes
+
+- Authored the module in `content/modules/policy-gradients.mdx`, reusing shared
+  layout primitives and `AssessmentQuiz`.
+- Updated module metadata in `src/lib/modules.ts` and the dynamic loader in
+  `src/lib/module-content.ts`.
+- Implemented visualisations in
+  `src/components/visualizations/ppo-training-playground.tsx` and
+  `src/components/visualizations/ppo-clip-visualizer.tsx` with
+  `VisualizationContainer` and slider controls.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of slider ranges, trajectory behaviour, export buttons, and quiz
+  responses.
+
+### Follow-ups
+
+- Add entropy-target or value-loss diagnostics once further Chapter 11 material
+  is incorporated.
+- Connect the playground to real PPO training logs when available to validate
+  the simplified simulator.

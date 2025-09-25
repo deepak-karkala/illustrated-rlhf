@@ -1,0 +1,201 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { PpoTrainingPlayground } from '@/components/visualizations/ppo-training-playground';
+import { PpoClipVisualizer } from '@/components/visualizations/ppo-clip-visualizer';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Arcade bot',
+    description:
+      'Learns to clear a level faster but has bumpers that stop reckless moves. PPO’s clip range plays the same role described in Chapter 11.',
+  },
+  {
+    label: 'Coach with joystick',
+    description:
+      'Reviews past runs and nudges the joystick with limited pressure so the bot continues exploring without flipping off the table.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'ppo-objective',
+    prompt: 'What objective does PPO maximise according to Chapter 11?',
+    options: [
+      'E[ min(r_t(θ) A_t, clip(r_t(θ), 1 - ε, 1 + ε) A_t ) - β D_KL(π_θ || π_ref) ]',
+      'E[ r_t(θ) A_t^2 ]',
+      'E[ π_ref(a|s) A_t ]',
+      'E[ log π_θ(a|s) ]',
+    ],
+    answerIndex: 0,
+    explanation:
+      'PPO keeps the REINFORCE term r_t(θ) A_t but clips the policy ratio and subtracts the KL penalty highlighted in Chapter 11.',
+  },
+  {
+    id: 'clip-purpose',
+    prompt: 'Why introduce the clip min/max operation?',
+    options: [
+      'To prevent any single batch from changing the policy more than ε away from the old policy.',
+      'To normalise advantages to mean zero.',
+      'To sample extra trajectories from the reference model.',
+      'To remove the need for a value network.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 11 frames clipping as an internal trust-region barrier that keeps ratios between 1 ± ε so RLHF policies do not collapse.',
+  },
+  {
+    id: 'kl-role',
+    prompt: 'How does the KL penalty interact with PPO in RLHF?',
+    options: [
+      'It keeps the new policy close to the instruction-tuned reference, complementing clipping.',
+      'It replaces the entropy bonus used in policy gradient methods.',
+      'It is only required when advantages are negative.',
+      'It updates the reward model weights.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The KL term is a safety tether described in Chapters 7 and 11; it discourages moving too far from the reference model during optimisation.',
+  },
+  {
+    id: 'vanilla-vs-ppo',
+    prompt: 'According to the book, what failure mode does PPO avoid that vanilla policy gradients suffer from?',
+    options: [
+      'Runaway policy ratios from large advantage batches.',
+      'Inability to compute gradients for stochastic policies.',
+      'Exploding reward model loss.',
+      'Missing value function updates.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Without clipping, REINFORCE can push ratios far from 1, causing instabilities—Chapter 11 credits PPO with taming this behaviour.',
+  },
+  {
+    id: 'implementation-detail',
+    prompt: 'Why do PPO implementations often cap the number of gradient steps per batch?',
+    options: [
+      'To ensure ratios stay close to 1 before the next rollout, as highlighted in Chapter 11.',
+      'Because GPU memory cannot hold more gradients.',
+      'Because the reward model stops providing gradients after one step.',
+      'Because PPO requires exact on-policy updates.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The book notes that PPO typically takes 1–4 steps per batch so the empirical data stays on-policy and clipping remains meaningful.',
+  },
+];
+
+<EquationSection id="equation" title="Clipped PPO Objective">
+  <p>
+    Chapter&nbsp;11 recaps policy gradient methods and introduces Proximal Policy Optimisation (PPO) as the workhorse for RLHF. PPO
+    modifies REINFORCE by clipping the policy ratio and applying a KL regulariser to stay near the instruction-tuned reference policy.
+  </p>
+
+  <MathBlock
+    expression={String.raw`J(\theta) = \mathbb{E}_{t}\Big[\min\big(r_t(\theta) A_t,\; \text{clip}(r_t(\theta), 1 - \epsilon, 1 + \epsilon) A_t\big) - \beta\, D_{\mathrm{KL}}(\pi_\theta(\cdot|s_t)\,\|\, \pi_{\text{ref}}(\cdot|s_t))\Big]`}
+  />
+
+  <ModuleCallout>
+    <strong>Notation.</strong>
+    <MathInline expression={String.raw`r_t(\theta) = \frac{\pi_\theta(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}`}/> is the policy ratio, <MathInline expression={String.raw`A_t`}/> the advantage estimate,
+    <MathInline expression={String.raw`\epsilon`}/> the clip range, and <MathInline expression={String.raw`\beta`}/> the KL weight that Chapter&nbsp;11 recommends decaying or adapting during training.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Why PPO Stabilises Updates">
+  <p>
+    Vanilla policy gradients push probabilities in proportion to the advantage. When the reward model spikes on a batch, the update can
+    double or halve token probabilities, derailing the language model. PPO keeps the desirable gradient signal but shaves off updates that
+    move the ratio beyond <MathInline expression={String.raw`1 \pm \epsilon`}/>.
+  </p>
+  <p>
+    Chapter&nbsp;11 also recommends limiting each rollout batch to a few gradient epochs and optionally whitening rewards or advantages.
+    Together with the KL penalty, these tactics keep the RLHF fine-tuning loop on-track without sacrificing exploration.
+  </p>
+  <ModuleCallout>
+    PPO variants highlighted in the chapter—RLOO, GRPO, and trust-region methods—can often be seen as choosing different advantage
+    estimators or adapting the internal step size while preserving the clipping intuition.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Arcade Bot With Bumpers">
+  <p>
+    Picture the Atari-style analogy from the introduction: the bot wants to chase a higher score but bumper rails keep it from flying off the
+    playfield. PPO’s clip range is that bumper; the KL term is the cord back to the reference console.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+  <p>
+    When the bot earns a high advantage, it can still surge forward—but only until it hits the bumper. Negative advantages pull it back toward
+    steady play.
+  </p>
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Policy Update Lab">
+  <p>
+    Experiment with the hyperparameters Chapter&nbsp;11 emphasises: learning rate, clip range, and KL penalty. Then inspect how clipping alters the
+    local objective compared with vanilla policy gradients.
+  </p>
+  <PpoTrainingPlayground />
+  <PpoClipVisualizer />
+  <ModuleCallout>
+    The RLHF book provides a compact PyTorch loop for PPO. The snippet below adapts that pattern, showing how clipping and KL penalties
+    appear in code.
+  </ModuleCallout>
+
+  ```python
+  import torch
+  import torch.nn.functional as F
+
+  def ppo_step(model, optimiser, batch, clip_range=0.2, kl_weight=0.01):
+      logits, values = model(batch["input_ids"], attention_mask=batch["attention_mask"])
+      logprobs = F.log_softmax(logits, dim=-1)
+      ratio = torch.exp(logprobs - batch["logprobs_old"])  # r_t(θ)
+
+      advantages = batch["advantages"]
+      pg_loss_unclipped = -advantages * ratio
+      pg_loss_clipped = -advantages * torch.clamp(ratio, 1.0 - clip_range, 1.0 + clip_range)
+      policy_loss = torch.max(pg_loss_unclipped, pg_loss_clipped).mean()
+
+      value_loss = 0.5 * (batch["returns"] - values).pow(2).mean()
+      kl = torch.distributions.kl.kl_divergence(
+          torch.distributions.Categorical(logits=logprobs),
+          torch.distributions.Categorical(logits=batch["logits_ref"]),
+      ).mean()
+
+      loss = policy_loss + 0.5 * value_loss + kl_weight * kl
+      optimiser.zero_grad()
+      loss.backward()
+      torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+      optimiser.step()
+      return loss.item()
+  ```
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Implementation Notes">
+  <ul>
+    <li>PPO clips the policy ratio around 1 ± ε and pairs it with a KL penalty to prevent drift from the reference model.</li>
+    <li>Reward/advantage normalisation, value heads, and limited epochs per batch keep updates on-policy (Chapter&nbsp;11).</li>
+    <li>Variants like GRPO and RLOO tweak advantage estimation but share the same trust region intuition.</li>
+    <li>Entropy bonuses and adaptive KL schedules (measuring actual KL against a target) help balance exploration with safety constraints.</li>
+    <li>Sequence packing and per-token losses reduce the wall-clock cost of PPO for long generations, as discussed in the implementation notes.</li>
+  </ul>
+  <ModuleCallout>
+    Many RLHF deployments still fall back to rejection sampling when compute is scarce. Chapter&nbsp;11 positions PPO as the flexible middle ground
+    between one-shot filtering and expensive RL loops.
+  </ModuleCallout>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="PPO Check">
+  <p>Test your grasp of the PPO objective, clipping behaviour, and stabilisation tricks from Chapter&nbsp;11.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>
