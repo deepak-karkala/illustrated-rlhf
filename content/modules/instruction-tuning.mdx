@@ -1,0 +1,160 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { ChatTemplateBuilder } from '@/components/visualizations/chat-template-builder';
+import { PromptMaskingVisualizer } from '@/components/visualizations/prompt-masking-visualizer';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Writing coach',
+    description:
+      'Demonstrates the format and tone required, providing exemplar answers that the model imitates during supervised fine-tuning.',
+  },
+  {
+    label: 'Script editor',
+    description:
+      'Defines the chat template and masks stage directions so actors focus on their lines—mirroring instruction tuning’s selective loss masking.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'ift-objective',
+    prompt: 'What loss does Chapter 9 use for instruction tuning?',
+    options: [
+      '-\mathbb{E}_{(x,y) \sim \mathcal{D}}[\log \pi_\theta(y|x)] applied only to assistant tokens',
+      'Maximise \mathbb{E}_{\tau}[r(\tau)] - \lambda D_{\mathrm{KL}}(\pi_\theta \Vert \pi_{\text{ref}})',
+      'Mean squared error between logits and rewards',
+      'Margin ranking loss between chosen and rejected completions',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Instruction tuning reuses the cross-entropy objective but masks prompt tokens so loss applies only to assistant responses (Chapter 9).',
+  },
+  {
+    id: 'chat-template-role',
+    prompt: 'Why are chat templates critical according to Chapter 9?',
+    options: [
+      'They standardise message roles so tokenisation and masking remain consistent across datasets.',
+      'They improve GPU memory usage during pretraining.',
+      'They eliminate the need for BOS/EOS tokens.',
+      'They automatically calibrate reward models.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 9 stresses that without consistent templates, instruction data and downstream preference datasets become incoherent.',
+  },
+  {
+    id: 'prompt-masking',
+    prompt: 'What does prompt masking achieve during instruction tuning?',
+    options: [
+      'It prevents the model from simply copying user queries by excluding them from the loss.',
+      'It regularises gradients during PPO.',
+      'It boosts perplexity on the pretraining corpus.',
+      'It enforces length penalties.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 9 recommends masking prompts so the model only learns to predict assistant tokens.',
+  },
+  {
+    id: 'multi-turn-handling',
+    prompt: 'How are multi-turn conversations prepared for instruction tuning?',
+    options: [
+      'They are unrolled so each assistant turn becomes a separate target while previous context is masked.',
+      'They are discarded to keep datasets single-turn only.',
+      'They are merged into one long prompt without masking.',
+      'They require PPO rather than supervised learning.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 9 explains that multi-turn chats are split so each assistant reply is trained independently with earlier turns masked.',
+  },
+  {
+    id: 'dataset-curation',
+    prompt: 'Which dataset practice does Chapter 9 highlight?',
+    options: [
+      'Combine human-written seed tasks with filtered synthetic expansions (e.g., FLAN, Natural Instructions).',
+      'Train solely on preference comparisons.',
+      'Rely on raw web crawl data without cleaning.',
+      'Restrict to single-domain corpora.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Instruction tuning pipelines blend curated human examples with synthetic augmentations to cover diverse tasks.',
+  },
+];
+
+<EquationSection id="equation" title="Supervised Objective">
+  <p>
+    Instruction tuning reuses the autoregressive cross-entropy loss, but Chapter&nbsp;9 emphasises masking so only assistant tokens contribute. Given prompts
+    <MathInline expression={String.raw`x`} /> and target responses <MathInline expression={String.raw`y`} />, the loss is:
+  </p>
+
+  <MathBlock expression={String.raw`\mathcal{L}_{\text{IFT}}(\theta) = -\mathbb{E}_{(x,y) \sim \mathcal{D}}\big[ \log \pi_\theta(y|x) \big]`} />
+
+  <ModuleCallout>
+    Prompt tokens are masked (loss weight zero) so the model imitates only the assistant responses. Multi-turn chats are unrolled so each assistant turn is
+    trained separately while previous turns remain in the context (Chapter&nbsp;9).
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Why Instruction Tuning Matters">
+  <p>
+    Instruction tuning converts a base language model into a conversational agent. Chapter&nbsp;9 positions it as the first stage of post-training: establish the
+    question–answer format, teach the model to follow instructions, and curate a diverse mixture of tasks (FLAN, Natural Instructions, Tulu-style blends).
+  </p>
+  <p>
+    Good instruction tuning raises the floor for downstream RLHF work—reward models, PPO, and DPO all assume consistent templates. The chapter also
+    highlights practical considerations: smaller batch sizes than pretraining, prompt/turn masking, and maintaining metadata for auditing synthetic augmentations.
+  </p>
+  <ModuleCallout>
+    Recipe reminders:
+    <ol>
+      <li><strong>Template discipline.</strong> Adopt a single chat template per model family.</li>
+      <li><strong>Diverse tasks.</strong> Blend human-written tasks with filtered synthetic expansions.</li>
+      <li><strong>Masking.</strong> Apply loss only to assistant tokens and handle multi-turn chats carefully.</li>
+    </ol>
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Writing Coach & Script Editor">
+  <p>
+    The writing coach supplies exemplars; the script editor enforces the dialogue format. Instruction tuning similarly provides demonstrations while controlling
+    how they are rendered to the model’s tokenizer.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Template & Masking Lab">
+  <p>
+    Experiment with the chat template builder and masking visualiser to internalise Chapter&nbsp;9’s workflow.
+  </p>
+  <ChatTemplateBuilder />
+  <PromptMaskingVisualizer />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Implementation Notes">
+  <ul>
+    <li>Instruction tuning keeps the standard cross-entropy loss but masks prompt tokens so only assistant outputs are learned.</li>
+    <li>Chat templates (system/user/assistant markers) must be consistent across instruction, preference, and RL datasets.</li>
+    <li>Multi-turn dialogues are unrolled into multiple samples so each assistant turn is a target.</li>
+    <li>Datasets combine curated human prompts with synthetic expansions; track provenance and apply safety filters.</li>
+    <li>Instruction tuning runs with smaller batch sizes and often precedes RLHF cycles like rejection sampling or PPO.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Instruction Tuning Check">
+  <p>Verify your understanding of chat templates, masking, and dataset practices from Chapter&nbsp;9.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

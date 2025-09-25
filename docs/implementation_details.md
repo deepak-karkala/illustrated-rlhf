@@ -438,3 +438,37 @@
 - Integrate real annotation schema examples once a data export is available.
 - Add links to forthcoming instruction tuning and reward modeling modules for
   cross-navigation once finalised.
+
+## Issue 2.1.2 – Instruction Tuning Module (2025-09-27)
+
+### Summary
+
+- Delivered the Chapter 9 instruction tuning module covering chat templates,
+  dataset curation, masking, and staging guidance for RLHF.
+- Added interactive tools: a chat template builder toggling between ChatML and
+  LLaMA styles, and a prompt masking visualiser for assistant-token loss.
+- Documented multi-turn unrolling, task mixture practices, and collected a
+  targeted assessment quiz.
+
+### Architecture Notes
+
+- Module authored in `content/modules/instruction-tuning.mdx`, reusing shared
+  section components and `AssessmentQuiz`.
+- Navigation/loader updated in `src/lib/modules.ts` and
+  `src/lib/module-content.ts` to expose the new chapter.
+- Visualisations implemented in
+  `src/components/visualizations/chat-template-builder.tsx` and
+  `src/components/visualizations/prompt-masking-visualizer.tsx`, leveraging
+  `VisualizationContainer`.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of template generation, masking preview, and quiz feedback.
+
+### Follow-ups
+
+- Integrate real dataset statistics (token counts, task mixtures) when
+  available.
+- Link directly to problem-setup, reward-modeling, and PPO modules for guided
+  learning flows.

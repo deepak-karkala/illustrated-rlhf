@@ -121,6 +121,61 @@ export const MODULES: ModuleNavItem[] = [
     ],
   },
   {
+    id: 'module-instruction-tuning',
+    slug: 'instruction-tuning',
+    title: 'Instruction Tuning',
+    description: 'Teach the model the chat format before RLHF',
+    phase: 'phase-2',
+    analogy: 'writing',
+    prerequisites: ['module-problem-setup', 'module-introduction'],
+    estimated_time: 35,
+    difficulty: 'intermediate',
+    tags: ['instruction-tuning', 'sft'],
+    summary:
+      'Build chat templates, curated datasets, and masking rules that prepare models for RLHF.',
+    order: 3,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'Supervised Objective',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'Why Instruction Tuning Matters',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Writing Coach & Script Editor',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'Template & Masking Lab',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Implementation Notes',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Instruction Tuning Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
+  {
     id: 'module-reward-modeling',
     slug: 'reward-modeling',
     title: 'Reward Modeling',
@@ -132,7 +187,7 @@ export const MODULES: ModuleNavItem[] = [
     difficulty: 'intermediate',
     tags: ['reward-model', 'preferences'],
     summary: 'Teach a reward model to score completions using pairwise human preference datasets.',
-    order: 3,
+    order: 4,
     progress: 30,
     status: 'available',
     sections: [
@@ -186,7 +241,7 @@ export const MODULES: ModuleNavItem[] = [
     difficulty: 'intermediate',
     tags: ['policy', 'ppo'],
     summary: 'Walk through PPO and why it stabilises post-training policy updates.',
-    order: 4,
+    order: 5,
     progress: 10,
     status: 'available',
     sections: [
@@ -240,7 +295,7 @@ export const MODULES: ModuleNavItem[] = [
     difficulty: 'intermediate',
     tags: ['alignment', 'dpo'],
     summary: 'Optimise policies directly against preference data without training a reward model.',
-    order: 5,
+    order: 6,
     progress: 0,
     status: 'available',
     sections: [
