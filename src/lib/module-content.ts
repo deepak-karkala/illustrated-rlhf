@@ -3,6 +3,7 @@ const MODULE_IMPORTERS: Record<string, () => Promise<{ default: (props: any) => 
   'problem-setup': () => import('../../content/modules/problem-setup.mdx'),
   'instruction-tuning': () => import('../../content/modules/instruction-tuning.mdx'),
   regularization: () => import('../../content/modules/regularization.mdx'),
+  'rejection-sampling': () => import('../../content/modules/rejection-sampling.mdx'),
   'reward-modeling': () => import('../../content/modules/reward-modeling.mdx'),
   'policy-gradients': () => import('../../content/modules/policy-gradients.mdx'),
   'direct-preference-optimization': () =>

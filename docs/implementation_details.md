@@ -506,3 +506,38 @@
   available.
 - Extend coverage with margin-based reward regularisation variants (e.g., Llama
   2’s margin loss) if future chapters provide datasets.
+
+## Issue 2.1.4 – Rejection Sampling Module (2025-09-27)
+
+### Summary
+
+- Implemented the rejection sampling module covering Chapter 10’s sampling →
+  scoring → selection workflow.
+- Built interactive sampling playground and method comparison chart to visualise
+  parameter trade-offs and baseline positioning versus PPO/DPO.
+- Added pseudocode snippet and quiz to reinforce the baseline technique and its
+  relationship to Best-of-N sampling.
+
+### Architecture Notes
+
+- Module content lives in `content/modules/rejection-sampling.mdx` using shared
+  layout components and `AssessmentQuiz`.
+- Updated `src/lib/modules.ts` ordering and `src/lib/module-content.ts` loader
+  for the new slug.
+- Visualisations implemented in
+  `src/components/visualizations/rejection-sampling-playground.tsx` and
+  `src/components/visualizations/method-comparison-chart.tsx` with
+  `VisualizationContainer`/slider controls.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of sampling parameters, selection modes, comparison chart, and quiz
+  feedback.
+
+### Follow-ups
+
+- Integrate real reward statistics or KL deltas when production logs are
+  available.
+- Extend the comparison chart with empirical metrics once PPO/DPO evaluations
+  are standardised in the guide.

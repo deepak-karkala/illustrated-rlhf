@@ -1,0 +1,182 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { RejectionSamplingPlayground } from '@/components/visualizations/rejection-sampling-playground';
+import { MethodComparisonChart } from '@/components/visualizations/method-comparison-chart';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Editor with a slush pile',
+    description:
+      'Requests many drafts (completions) and keeps only the best for publication, just like Chapter 10\'s baseline filtering.',
+  },
+  {
+    label: 'Casting director',
+    description:
+      'Auditions multiple actors for each role and selects the top fit. Rejection sampling performs the same filtering before supervised finetuning.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'sampling-definition',
+    prompt: 'How does Chapter 10 define rejection sampling for RLHF?',
+    options: [
+      'Generate multiple completions per prompt, score them with a reward model, then finetune on the highest scoring set.',
+      'Train a policy strictly through PPO updates.',
+      'Optimise log-probabilities directly using preference tuples.',
+      'Use entropy bonuses to keep the policy diverse without reward models.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter frames rejection sampling as a filter: sample → score → keep the best and continue supervised training.',
+  },
+  {
+    id: 'top-k-selection',
+    prompt: 'What are two selection schemes highlighted in Chapter 10?',
+    options: [
+      'Top-per-prompt and global Top-K selection.',
+      'Teacher forcing and policy mixing.',
+      'Beam search and nucleus sampling.',
+      'Entropy clipping and KL clipping.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Section 10.1.2 contrasts taking the best per prompt with picking the best pairs globally.',
+  },
+  {
+    id: 'completions-budget',
+    prompt: 'Why is the completions-per-prompt budget important?',
+    options: [
+      'Too few completions bias the dataset and make the filtered set noisy.',
+      'It determines the tokenizer vocabulary.',
+      'It sets the PPO learning rate.',
+      'It controls entropy bonuses automatically.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 10 recommends 10–30 completions; otherwise the reward model cannot find diverse high-quality examples.',
+  },
+  {
+    id: 'best-of-n',
+    prompt: 'How does Best-of-N (BoN) relate to rejection sampling?',
+    options: [
+      'BoN is the inference-time analogue—selecting the best response at generation time without updating the model.',
+      'BoN replaces the reward model entirely.',
+      'BoN requires PPO updates on top of rejection sampling.',
+      'BoN is only applicable to instruction tuning.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 10.2 treats BoN as the same selection logic applied at inference time rather than during training.',
+  },
+  {
+    id: 'reward-dependence',
+    prompt: 'Which factor most strongly determines rejection sampling quality?',
+    options: [
+      'Reward model fidelity and coverage.',
+      'Transformer depth alone.',
+      'Batch size during pretraining.',
+      'The presence of entropy bonuses.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter stresses that better reward modelling and prompt diversity lead to better filtered datasets.',
+  },
+];
+
+<EquationSection id="equation" title="Sampling & Selection">
+  <p>
+    Chapter&nbsp;10 frames rejection sampling as a simple pipeline: sample multiple completions <MathInline expression={String.raw`y`} /> for each prompt,
+    evaluate them with a reward model <MathInline expression={String.raw`\mathcal{R}`} />, and keep the top set before finetuning.
+  </p>
+
+  <MathBlock expression={String.raw`\begin{aligned}
+X &= [x_1, \dots, x_M]\\
+Y_i &= [y_{i,1}, \dots, y_{i,N}], \quad y_{i,j} \sim \pi_{\text{model}}(\cdot | x_i)\\
+R_{i,j} &= \mathcal{R}(y_{i,j} | x_i)\\
+S(x_i) &= \text{TopK}(R_{i,1..N})
+\end{aligned}`}
+  />
+
+  ```python
+  def rejection_sampling(dataset, policy, reward_model, n_samples, top_k):
+      # Sample n completions per prompt from the current policy (Chapter 10.1)
+      sampled = []
+      for prompt in dataset:
+          completions = policy.generate(prompt, num_return_sequences=n_samples)
+          # Score each completion with the reward model
+          scored = [
+              {
+                  "prompt": prompt,
+                  "completion": completion,
+                  "reward": reward_model.score(prompt, completion),
+              }
+              for completion in completions
+          ]
+          # Keep the top completions either per prompt or globally
+          sampled.extend(select_top_k(scored, top_k))
+
+      # Fine-tune on the filtered set just like supervised instruction tuning
+      finetune_with_sft(sampled)
+      return sampled
+  ```
+
+  <ModuleCallout>
+    Selection can be per prompt or across the global pool. Chapter 10 recommends tracking how Top-K choices change when the reward model drifts.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Why Rejection Sampling Works">
+  <p>
+    Rejection sampling keeps the optimisation purely supervised while still benefiting from preference signals. By upgrading the instruction-tuning dataset with
+    reward-filtered outputs, we gain higher-quality demonstrations without running PPO.
+  </p>
+  <p>
+    The trade-off is compute: more completions and stronger reward models produce better datasets but increase inference cost. Chapter&nbsp;10 advises monitoring
+    KL divergence to ensure the filtered set does not diverge far from the source policy.
+  </p>
+  <ModuleCallout>
+    Practical workflow (Chapter&nbsp;10): sample → score → select → finetune → evaluate. Rinse and repeat with updated policies or reward models.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Editor's Slush Pile">
+  <p>
+    Editors skim hundreds of drafts, keep a handful, and publish an anthology. Rejection sampling performs the same step to bootstrap better instruction-tuning data.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Sampling Lab">
+  <p>
+    Try the playground to see how completions-per-prompt, temperature, and selection strategy influence the filtered dataset. Then compare baseline methods.
+  </p>
+  <RejectionSamplingPlayground />
+  <MethodComparisonChart />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>Sample broadly (10–30 completions per prompt) and rely on a calibrated reward model to filter quality (Chapter&nbsp;10.1).</li>
+    <li>Track both per-prompt and global selection; they emphasise diversity differently.</li>
+    <li>Record metadata (temperature, sampling policy, reward version) so future runs can audit changes.</li>
+    <li>Best-of-N sampling applies the same selection logic at inference time; consider it when RL budgets are limited.</li>
+    <li>Rejection sampling is a baseline—once datasets plateau, switch to PPO or DPO for further gains.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Rejection Sampling Check">
+  <p>Review the workflow, parameter trade-offs, and variants from Chapter&nbsp;10.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>
