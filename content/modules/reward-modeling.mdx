@@ -1,0 +1,215 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { PreferenceComparisonPlayground } from '@/components/visualizations/preference-comparison-playground';
+import { RewardModelLossExplorer } from '@/components/visualizations/reward-model-loss-explorer';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Creative writing student',
+    description:
+      'Drafts multiple completions and experiments with tone. The reward model watches how the editor scores each revision in Chapter 7 of the RLHF book.',
+  },
+  {
+    label: 'Editor mentor',
+    description:
+      'Annotates pairwise comparisons with notes on safety, clarity, and style. The Bradley–Terry loss teaches the model to agree with these judgments.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'bradley-terry-form',
+    prompt: 'What probability does the reward model maximise during training according to the Bradley–Terry derivation?',
+    options: [
+      'P(y_w > y_l) = σ(r_θ(x, y_w) − r_θ(x, y_l))',
+      'P(y_w) = softmax(r_θ(y_w)) over the entire dataset',
+      'P(y_w | x) = π_ref(y | x) · π_RL(y | x)',
+      'P(y_w) = exp(−|r_θ(y_w) − r_θ(y_l)|)',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 7 shows that maximising σ(r_θ(y_w) − r_θ(y_l)) matches the Bradley–Terry likelihood for pairwise preferences.',
+  },
+  {
+    id: 'loss-interpretation',
+    prompt: 'How does the negative log-likelihood loss behave when the model scores the rejected sample higher than the chosen sample?',
+    options: [
+      'The loss spikes because σ(Δ) becomes small, yielding large gradients to correct the mistake.',
+      'It remains unchanged because the loss only depends on human preference labels.',
+      'It decreases linearly with the reward gap.',
+      'It saturates at zero regardless of the gap sign.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'When r(y_w) − r(y_l) is negative the Bradley–Terry probability shrinks, so −log σ(Δ) becomes large, signalling a correction is required.',
+  },
+  {
+    id: 'margin-variant',
+    prompt: 'Why did Llama 2 experiment with a margin term m(r) inside the pairwise loss?',
+    options: [
+      'To encode annotators’ strength-of-preference information from Likert ratings.',
+      'To stabilise PPO gradients during later RLHF phases.',
+      'To reduce dependence on human data volume.',
+      'To avoid using a reference model during training.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The RLHF book notes that margin-aware losses incorporate the degree of preference when annotators provide richer signals than binary labels.',
+  },
+  {
+    id: 'outcome-vs-process',
+    prompt: 'What differentiates process reward models (PRMs) from standard preference models?',
+    options: [
+      'PRMs score intermediate reasoning steps rather than only the final completion.',
+      'PRMs rely on supervised imitation instead of pairwise comparisons.',
+      'PRMs avoid using any human feedback.',
+      'PRMs output token-level probabilities directly used for decoding.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 7 separates outcome reward models (final answer correctness) and process reward models that annotate each chain-of-thought step.',
+  },
+  {
+    id: 'training-regime',
+    prompt: 'Why do many teams stop reward model training after a single epoch?',
+    options: [
+      'Reward datasets are small, so overfitting to annotators happens quickly.',
+      'The loss becomes numerically unstable after one epoch.',
+      'Optimisers cannot handle further gradient updates.',
+      'Pairwise datasets refresh each batch so more epochs are unnecessary.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 7 highlights that reward models can memorise the comparison set rapidly; limiting epochs preserves generalisation.',
+  },
+];
+
+<EquationSection id="equation" title="Pairwise Preference Loss">
+  Reward models turn editor-style comparisons into a scalar score. Following the Bradley–Terry derivation in
+  Chapter&nbsp;7 of the RLHF book, we treat preferred and rejected completions $(y_w, y_l)$ for the same prompt and maximise
+  the likelihood that the preferred sample wins:
+
+  <MathBlock expression={String.raw`P(y_w > y_l) = \frac{\exp(r_\theta(x, y_w))}{\exp(r_\theta(x, y_w)) + \exp(r_\theta(x, y_l))}`} />
+
+  Minimising the negative log-likelihood yields the familiar logistic loss used by OpenAI, Anthropic, and Meta:
+
+  <MathBlock expression={String.raw`\mathcal{L}(\theta) = -\log\big(\sigma(r_\theta(x, y_w) - r_\theta(x, y_l))\big) = \log\big(1 + e^{r_\theta(x, y_l) - r_\theta(x, y_w)}\big)`} />
+
+  The two forms above are numerically identical. They encourage the model to amplify the reward gap whenever humans have
+  a consistent preference.
+</EquationSection>
+
+<IntuitionSection id="intuition" title="From Comparisons to Scores">
+  <p>
+    Annotators rarely supply token-level supervision. Instead, Chapter&nbsp;7 describes a workflow where editors mark which
+    answer better reflects policy, tone, or correctness. Reward modeling teaches a lightweight head on top of the language
+    model to reproduce these judgments and generalise them to unseen prompts.
+  </p>
+  <p>
+    The logits from this head are not probabilities about truth; they are learned proxies for “what annotators would pick”.
+    That proxy becomes the objective for RLHF or rejection sampling. Because the dataset is small, most teams regularise by
+    mixing in instruction-tuning style data, running short training schedules, and verifying performance on held-out
+    comparisons.
+  </p>
+  <ModuleCallout>
+    Chapter&nbsp;7 emphasises three sub-flavours of reward models:
+    <ol>
+      <li>
+        <strong>Standard preference models</strong> – score whole completions using pairwise comparisons.
+      </li>
+      <li>
+        <strong>Outcome reward models (ORMs)</strong> – estimate answer correctness probabilities.
+      </li>
+      <li>
+        <strong>Process reward models (PRMs)</strong> – score intermediate steps in a chain-of-thought trace.
+      </li>
+    </ol>
+    Each behaves differently during optimisation, but all share the Bradley–Terry style loss.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Writing Student & Editor">
+  <p>
+    The RLHF book repeatedly leans on the editor metaphor: a writing student drafts alternate endings while an editor marks
+    their favourite. The student copies the editor’s reasoning until the editor and student agree nearly every time.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+  <p>
+    By learning the editor’s pairwise judgments, the reward model becomes a proxy editor. Downstream optimisation can then
+    query that proxy instead of asking the human mentor for every revision.
+  </p>
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Reward Model Explorer">
+  <p>
+    Explore how weighting different quality axes changes which completion a reward model prefers, then visualise how the
+    Bradley–Terry probability and loss respond to the reward gap.
+  </p>
+  <PreferenceComparisonPlayground />
+  <RewardModelLossExplorer />
+  <ModuleCallout>
+    Chapter&nbsp;7 presents a concise implementation of the loss:
+    {' '}
+    <code>loss = -nn.functional.logsigmoid(reward_chosen - reward_rejected).mean()</code>. Below is a slightly expanded
+    PyTorch snippet with gradient clipping and single-epoch training as recommended in the text.
+  </ModuleCallout>
+
+  ```python
+  import torch
+  import torch.nn.functional as F
+
+  def train_reward_model(model, dataloader, optimiser):
+      model.train()
+      for inputs_chosen, inputs_rejected in dataloader:
+          rewards_chosen = model(**inputs_chosen)
+          rewards_rejected = model(**inputs_rejected)
+          loss = -F.logsigmoid(rewards_chosen - rewards_rejected).mean()
+          optimiser.zero_grad()
+          loss.backward()
+          torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+          optimiser.step()
+      return loss.item()
+  ```
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Practice Patterns">
+  <ul>
+    <li>
+      Bradley–Terry preference modeling is the default loss; margin variants help when annotators supply graded scores.
+    </li>
+    <li>
+      Reward models typically fine-tune for a single epoch to avoid memorising small datasets.
+    </li>
+    <li>
+      Outcome and process reward models extend the paradigm to correctness signals and stepwise reasoning, respectively.
+    </li>
+    <li>
+      Evaluations such as RewardBench, M-RewardBench, and PRM Bench benchmark alignment across domains (Chapter&nbsp;7.9).
+    </li>
+    <li>
+      Many teams increasingly use “LLM-as-a-judge” to bootstrap comparisons, but dedicated reward models still perform best
+      on formal benchmarks.
+    </li>
+  </ul>
+  <ModuleCallout>
+    Real-world deployments: Anthropic’s Constitutional AI, OpenAI’s InstructGPT, and Meta’s Llama 2 all rely on the loss
+    derived above. Scaling trends in Chapter&nbsp;7 show steady accuracy gains from larger models and carefully curated
+    preference datasets.
+  </ModuleCallout>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Reward Modeling Check">
+  <p>Confirm your understanding of the loss function, variants, and evaluation techniques from Chapter&nbsp;7.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

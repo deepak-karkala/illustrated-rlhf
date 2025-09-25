@@ -300,3 +300,38 @@
 
 - Consider extracting other large attribute literals in MDX content into shared
   constants to avoid future parser regressions when `mdxRs` is enabled.
+
+## Issue 1.4.2 – Reward Modeling Module (2025-09-26)
+
+### Summary
+
+- Delivered the full Reward Modeling chapter, promoting it to an available
+  module with content drawn from Chapter 7 of the RLHF book.
+- Added interactive playgrounds for human/editor comparisons and the
+  Bradley–Terry probability plus loss curve.
+- Documented implementation details, including the canonical PyTorch snippet,
+  margin variants, and benchmark references.
+
+### Architecture Notes
+
+- Authored the module in `content/modules/reward-modeling.mdx`, reusing shared
+  section components and the quiz framework.
+- Updated navigation metadata in `src/lib/modules.ts` and wired the MDX loader
+  in `src/lib/module-content.ts`.
+- Implemented new visualisations in
+  `src/components/visualizations/preference-comparison-playground.tsx` and
+  `src/components/visualizations/reward-model-loss-explorer.tsx` using
+  `VisualizationContainer`.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of both interactive components (slider bounds, export buttons) and
+  quiz feedback.
+
+### Follow-ups
+
+- Consider adding real annotator statistics to the playground once datasets are
+  available.
+- Extend the module with outcome/process reward case studies when additional
+  chapters are published.
