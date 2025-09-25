@@ -7,30 +7,52 @@ import type { ModuleNavItem } from '@/lib/modules';
 import type { ModuleSectionType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
-const SECTION_CONFIG: Record<ModuleSectionType, { label: string; icon: string }> = {
+const SECTION_CONFIG: Record<
+  ModuleSectionType,
+  { label: string; icon: string; badge: string; surface: string }
+> = {
   equation: {
     label: 'Equation',
     icon: '📀',
+    badge:
+      'border-analogy-atari-200 bg-analogy-atari-50 text-analogy-atari-700 dark:bg-analogy-atari-900/20',
+    surface: 'bg-analogy-atari-50/60 dark:bg-analogy-atari-900/10 border-analogy-atari-200',
   },
   intuition: {
     label: 'Intuition',
     icon: '🧠',
+    badge:
+      'border-analogy-writing-200 bg-analogy-writing-50 text-analogy-writing-700 dark:bg-analogy-writing-900/20',
+    surface: 'bg-analogy-writing-50/60 dark:bg-analogy-writing-900/10 border-analogy-writing-200',
   },
   analogy: {
     label: 'Analogy',
     icon: '🎭',
+    badge:
+      'border-analogy-writing-200 bg-analogy-writing-50 text-analogy-writing-700 dark:bg-analogy-writing-900/20',
+    surface: 'bg-analogy-writing-50/60 dark:bg-analogy-writing-900/10 border-analogy-writing-200',
   },
   visualization: {
     label: 'Visualization',
     icon: '🖼️',
+    badge:
+      'border-analogy-reasoning-200 bg-analogy-reasoning-50 text-analogy-reasoning-700 dark:bg-analogy-reasoning-900/20',
+    surface:
+      'bg-analogy-reasoning-50/60 dark:bg-analogy-reasoning-900/10 border-analogy-reasoning-200',
   },
   takeaways: {
     label: 'Takeaways',
     icon: '✅',
+    badge: 'border-border bg-muted text-foreground',
+    surface: 'bg-muted/60 border-border',
   },
   assessment: {
     label: 'Self-check',
     icon: '📝',
+    badge:
+      'border-analogy-advanced-200 bg-analogy-advanced-50 text-analogy-advanced-700 dark:bg-analogy-advanced-900/20',
+    surface:
+      'bg-analogy-advanced-50/60 dark:bg-analogy-advanced-900/10 border-analogy-advanced-200',
   },
 };
 
@@ -43,7 +65,7 @@ interface ModuleLayoutProps {
 
 export function ModuleLayout({ module, previous, next, children }: ModuleLayoutProps): JSX.Element {
   return (
-    <article className="space-y-8">
+    <article className="flex h-full flex-col gap-8 lg:grid lg:grid-rows-[auto_minmax(0,1fr)_auto] lg:gap-8">
       <header className="space-y-4 rounded-3xl border border-border bg-card/70 p-6 shadow-sm">
         <AnalogyPill type={module.analogy} />
         <div className="space-y-2">
@@ -70,8 +92,8 @@ export function ModuleLayout({ module, previous, next, children }: ModuleLayoutP
         </dl>
       </header>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,220px)_1fr]">
-        <aside className="no-print space-y-6 lg:sticky lg:top-28">
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,220px)_1fr] lg:min-h-0">
+        <aside className="no-print space-y-6 lg:sticky lg:top-16 lg:self-start">
           <div className="rounded-2xl border border-border bg-card/60 p-5 shadow-sm">
             <h2 className="text-sm font-semibold text-foreground">Table of contents</h2>
             <nav className="mt-3 space-y-2 text-sm">
@@ -117,7 +139,9 @@ export function ModuleLayout({ module, previous, next, children }: ModuleLayoutP
             )}
           </div>
         </aside>
-        <div className="space-y-12">{children}</div>
+        <div className="space-y-12 lg:min-h-0 lg:max-h-[calc(100vh-1.75rem)] lg:overflow-y-auto lg:pr-4 lg:pb-6">
+          {children}
+        </div>
       </div>
 
       <footer className="flex flex-col gap-3 border-t border-border pt-6 no-print sm:flex-row sm:items-center sm:justify-between">
@@ -176,18 +200,27 @@ export function ModuleSection({
   const config = SECTION_CONFIG[type];
 
   return (
-    <section
-      id={id}
-      className="module-section scroll-mt-28 space-y-4 border-b border-border pb-8 last:border-b-0"
-    >
-      <header className="space-y-1">
-        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+    <section id={id} className="module-section scroll-mt-28 space-y-4 pb-10">
+      <header className="space-y-2">
+        <span
+          className={cn(
+            'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-colors',
+            config.badge
+          )}
+        >
           <span aria-hidden="true">{config.icon}</span>
           {eyebrow ?? config.label}
         </span>
-        <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+        <h2 className="text-2xl font-semibold text-foreground">{title}</h2>
       </header>
-      <div className="prose prose-slate max-w-none dark:prose-invert">{children}</div>
+      <div
+        className={cn(
+          'prose prose-slate max-w-none rounded-2xl border p-5 shadow-sm transition-colors dark:prose-invert',
+          config.surface
+        )}
+      >
+        {children}
+      </div>
     </section>
   );
 }
