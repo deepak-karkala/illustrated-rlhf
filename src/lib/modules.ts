@@ -66,6 +66,61 @@ export const MODULES: ModuleNavItem[] = [
     ],
   },
   {
+    id: 'module-problem-setup',
+    slug: 'problem-setup',
+    title: 'Problem Setup & Context',
+    description: 'Foundations: definitions, pipelines, and data collection',
+    phase: 'phase-2',
+    analogy: 'advanced',
+    prerequisites: ['module-introduction'],
+    estimated_time: 30,
+    difficulty: 'intermediate',
+    tags: ['foundations', 'problem-setup'],
+    summary:
+      'Map the RLHF objective, modern pipelines, and preference data workflow before diving deeper.',
+    order: 2,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'RLHF Objective Refresher',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'From Definitions to Pipelines',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Systems Architect & Field Researcher',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'Preference Data Playground',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Operational Notes',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Problem Setup Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
+  {
     id: 'module-reward-modeling',
     slug: 'reward-modeling',
     title: 'Reward Modeling',
@@ -77,7 +132,7 @@ export const MODULES: ModuleNavItem[] = [
     difficulty: 'intermediate',
     tags: ['reward-model', 'preferences'],
     summary: 'Teach a reward model to score completions using pairwise human preference datasets.',
-    order: 2,
+    order: 3,
     progress: 30,
     status: 'available',
     sections: [
@@ -131,7 +186,7 @@ export const MODULES: ModuleNavItem[] = [
     difficulty: 'intermediate',
     tags: ['policy', 'ppo'],
     summary: 'Walk through PPO and why it stabilises post-training policy updates.',
-    order: 3,
+    order: 4,
     progress: 10,
     status: 'available',
     sections: [
@@ -185,7 +240,7 @@ export const MODULES: ModuleNavItem[] = [
     difficulty: 'intermediate',
     tags: ['alignment', 'dpo'],
     summary: 'Optimise policies directly against preference data without training a reward model.',
-    order: 4,
+    order: 5,
     progress: 0,
     status: 'available',
     sections: [

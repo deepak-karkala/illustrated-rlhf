@@ -1,0 +1,164 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { PreferenceInterfaceDemo } from '@/components/visualizations/preference-interface-demo';
+import { PreferenceBiasVisualizer } from '@/components/visualizations/preference-bias-visualizer';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Systems architect',
+    description:
+      'Designs the RLHF pipeline, specifying state, action, and feedback signals so the rest of the team can iterate safely.',
+  },
+  {
+    label: 'Field researcher',
+    description:
+      'Collects preference data, calibrates annotators, and notes biases—mirroring the robust data collection practices described in Chapters 5 and 6.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'rlhf-objective-formulation',
+    prompt: 'How does Chapter 4 formulate the RLHF objective when adding a KL penalty?',
+    options: [
+      'Maximise \( \mathbb{E}_{\tau \sim \pi_\theta}[ r(\tau ) - \lambda D_{\mathrm{KL}}(\pi_\theta \Vert \pi_{\text{ref}}) ] \)',
+      'Minimise \( \|\pi_\theta - \pi_{\text{ref}}\|_2^2 \)',
+      'Maximise \( \mathbb{E}_{x}[\log \pi_\theta(x)] \)',
+      'Minimise \(\mathbb{E}[r_\theta(x,y)]\)',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 4 adds a KL distance to the RLHF objective to prevent optimisation from straying too far from the finetuned reference policy.',
+  },
+  {
+    id: 'preference-tuple-format',
+    prompt: 'What basic information is recommended for each preference row in Chapter 6?',
+    options: [
+      'Prompt, chosen completion, rejected completion, annotator metadata/notes',
+      'Only the prompt and chosen completion',
+      'Just reward scores without the raw completions',
+      'The model logits but not the human label',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The book stresses storing the raw pair, annotator rationale, and any calibration metadata to audit biases later.',
+  },
+  {
+    id: 'bias-consideration',
+    prompt: 'Which source of bias does Chapter 6 highlight for preference datasets?',
+    options: [
+      'Queue sampling over-representing specific domains',
+      'Gradient clipping causing instability',
+      'Tokenisation errors in the base model',
+      'Lack of synthetic data augmentation',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Section 6 catalogues biases from workflow choices like sampling customer support tickets disproportionately.',
+  },
+  {
+    id: 'modern-pipelines',
+    prompt: 'What distinguishes modern post-training pipelines (e.g., Tülu 3) discussed in Chapter 4?',
+    options: [
+      'They iterate through many cycles of SFT, preference collection, RL, and evaluation rather than a single pass.',
+      'They skip reward modeling entirely.',
+      'They train from scratch without a base model.',
+      'They rely exclusively on synthetic data.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 4 emphasises that contemporary systems loop through multiple stages with evaluation gates and safety reviews.',
+  },
+  {
+    id: 'preference-vs-utility',
+    prompt: 'According to Chapter 5, why is a preference function different from a classical utility function?',
+    options: [
+      'Preferences capture relative judgments without requiring absolute magnitudes.',
+      'Preferences are always transitive and consistent.',
+      'Utility functions do not apply to language models.',
+      'Preferences cannot be aggregated across annotators.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter notes that policy updates rely on relative choices; magnitude assumptions from utility theory rarely hold in practice.',
+  },
+];
+
+<EquationSection id="equation" title="RLHF Objective Refresher">
+  <p>
+    Chapters&nbsp;3–4 formalise RLHF as regularised policy optimisation. Starting from a base policy <MathInline expression={String.raw`\pi_{\text{ref}}`} />, we optimise a
+    new policy <MathInline expression={String.raw`\pi_\theta`} /> against human preferences while constraining divergence from the reference.
+  </p>
+
+  <MathBlock
+    expression={String.raw`J(\pi_\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[r(\tau)] - \lambda D_{\mathrm{KL}}(\pi_\theta \Vert \pi_{\text{ref}})`}
+  />
+
+  <ModuleCallout>
+    <strong>Notation.</strong> <MathInline expression={String.raw`\tau`} /> denotes a trajectory (prompt plus completion), <MathInline expression={String.raw`r(\tau)`} /> can
+    originate from a reward model or direct preference loss, and <MathInline expression={String.raw`\lambda`} /> balances improvement with staying anchored to the
+    supervised finetuned model.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="From Definitions to Pipelines">
+  <p>
+    Chapter&nbsp;3 reviews reinforcement learning definitions and highlights why RLHF deviates from classic online RL: we operate in an offline, batched setting
+    and must respect the semantics learned during pretraining. Chapter&nbsp;4 then zooms out to modern training recipes—multi-stage pipelines like Tülu 3 combine
+    instruction tuning, preference collection, RL, evaluation, and safety review in repeated loops.
+  </p>
+  <p>
+    Chapters&nbsp;5–6 discuss the motivated nature of preferences and the practical workflow of gathering annotations. They advocate for clear schemas, calibration
+    tasks, and frequent audits to capture bias and “preference displacement” risks. This module gathers those practices into a single reference point.
+  </p>
+  <ModuleCallout>
+    Key takeaways from the chapters:
+    <ol>
+      <li><strong>Problem definition.</strong> Specify states, actions, and feedback channels—even if the “state” is just the prompt history.</li>
+      <li><strong>Regularisation.</strong> Use KL penalties and early stopping to protect the base model.</li>
+      <li><strong>Data hygiene.</strong> Collect notes, metadata, and inter-annotator agreement metrics.</li>
+    </ol>
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Systems Architect Meets Field Researcher">
+  <p>
+    RLHF problem setup feels like a collaboration between a systems architect and a field researcher: one defines the optimisation contract, the other supplies
+    grounded data and bias reports. Together they ensure downstream PPO or DPO can operate safely.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Preference Data Playground">
+  <p>
+    Use these tools to experience Chapter&nbsp;6’s annotation workflow and bias mitigation advice.
+  </p>
+  <PreferenceInterfaceDemo />
+  <PreferenceBiasVisualizer />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>Define the RLHF objective with explicit KL or trust-region regularisation (Chapters&nbsp;3–4).</li>
+    <li>Modern pipelines iterate through instruction tuning, reward modeling, RL, evaluation, and safety review cycles.</li>
+    <li>Preference datasets must include chosen/rejected pairs plus annotator rationale to audit biases (Chapter&nbsp;6).</li>
+    <li>Bias can stem from sampling queues, interface design, or annotation incentives—track distributions continually.</li>
+    <li>Clear problem setup accelerates later modules (reward modeling, PPO, DPO) because assumptions are documented upfront.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Problem Setup Check">
+  <p>Confirm your understanding of the RLHF problem formulation, data collection workflows, and bias considerations from Chapters&nbsp;3–6.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

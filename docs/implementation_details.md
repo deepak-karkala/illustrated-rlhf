@@ -404,3 +404,37 @@
 - Add empirical preference displacement diagnostics once production logs are
   available.
 - Capture IPO/cDPO calibration recipes when they stabilise in the ecosystem.
+
+## Issue 2.1.1 – Problem Setup & Context Module (2025-09-27)
+
+### Summary
+
+- Authored the problem-setup module to consolidate Chapters 3–6: mathematical
+  definitions, pipeline overviews, and preference data practices.
+- Added interactive demos for pairwise annotation logging and bias visualisation
+  to reflect Chapter 6 workflows.
+- Highlighted modern multi-stage pipelines (e.g., Tülu 3), KL-regularised
+  objectives, and data schema recommendations.
+
+### Architecture Notes
+
+- Module lives in `content/modules/problem-setup.mdx`, using shared layout
+  components, `AssessmentQuiz`, and new visualisations.
+- Updated `src/lib/modules.ts` and `src/lib/module-content.ts` so the module
+  appears in navigation and dynamic imports.
+- Visualisations implemented in
+  `src/components/visualizations/preference-interface-demo.tsx` and
+  `src/components/visualizations/preference-bias-visualizer.tsx`, both wrapped
+  by `VisualizationContainer`.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of interactive controls, annotation JSON output, and quiz
+  explanations.
+
+### Follow-ups
+
+- Integrate real annotation schema examples once a data export is available.
+- Add links to forthcoming instruction tuning and reward modeling modules for
+  cross-navigation once finalised.
