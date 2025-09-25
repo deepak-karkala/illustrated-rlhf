@@ -371,3 +371,36 @@
   is incorporated.
 - Connect the playground to real PPO training logs when available to validate
   the simplified simulator.
+
+## Issue 1.4.4 – Direct Preference Optimization (2025-09-26)
+
+### Summary
+
+- Published the DPO module based on Chapter 12, showing how to align policies
+  offline without reward models.
+- Added interactive visualisations for β/margin weighting and the DPO loss curve
+  to illustrate preference displacement.
+- Captured the core derivation, debate analogy, PyTorch training step, and quiz
+  covering β tuning and variants like REBEL.
+
+### Architecture Notes
+
+- Authored `content/modules/direct-preference-optimization.mdx`, reusing shared
+  section components and `AssessmentQuiz`.
+- Updated module metadata (`src/lib/modules.ts`) and loader
+  (`src/lib/module-content.ts`).
+- Implemented visualisations in
+  `src/components/visualizations/dpo-beta-playground.tsx` and
+  `src/components/visualizations/dpo-loss-surface.tsx` using
+  `VisualizationContainer` controls.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of slider bounds, weight calculations, and quiz feedback.
+
+### Follow-ups
+
+- Add empirical preference displacement diagnostics once production logs are
+  available.
+- Capture IPO/cDPO calibration recipes when they stabilise in the ecosystem.

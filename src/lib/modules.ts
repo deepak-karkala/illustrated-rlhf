@@ -173,6 +173,60 @@ export const MODULES: ModuleNavItem[] = [
       },
     ],
   },
+  {
+    id: 'module-dpo',
+    slug: 'direct-preference-optimization',
+    title: 'Direct Preference Optimization (DPO)',
+    description: 'Alignment without reinforcement learning',
+    phase: 'phase-1',
+    analogy: 'advanced',
+    prerequisites: ['module-introduction', 'module-reward-modeling'],
+    estimated_time: 30,
+    difficulty: 'intermediate',
+    tags: ['alignment', 'dpo'],
+    summary: 'Optimise policies directly against preference data without training a reward model.',
+    order: 4,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'DPO Objective',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'Offline Alignment Intuition',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Debate Judge & Apprentice',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'DPO Playground',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Operational Notes',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'DPO Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
 ];
 
 export function getModuleBySlug(slug: string): ModuleNavItem | undefined {

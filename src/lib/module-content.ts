@@ -2,6 +2,8 @@ const MODULE_IMPORTERS: Record<string, () => Promise<{ default: (props: any) => 
   introduction: () => import('../../content/modules/introduction.mdx'),
   'reward-modeling': () => import('../../content/modules/reward-modeling.mdx'),
   'policy-gradients': () => import('../../content/modules/policy-gradients.mdx'),
+  'direct-preference-optimization': () =>
+    import('../../content/modules/direct-preference-optimization.mdx'),
 };
 
 export async function getModuleContent(slug: string) {

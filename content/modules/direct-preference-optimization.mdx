@@ -1,0 +1,183 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+import { DpoBetaPlayground } from '@/components/visualizations/dpo-beta-playground';
+import { DpoLossSurface } from '@/components/visualizations/dpo-loss-surface';
+
+export const analogyItems = [
+  {
+    label: 'Debate judge',
+    description:
+      'Keeps a transcript of human-preferred answers and nudges the apprentice to argue like the winner without ever training a separate reward model.',
+  },
+  {
+    label: 'Apprentice debater',
+    description:
+      'Adjusts wording directly to match the judge’s notes. DPO’s gradients push the apprentice to copy human choices while staying close to the reference model.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'dpo-objective',
+    prompt: 'Which expression matches the DPO objective from Chapter 12?',
+    options: [
+      'maximize\; \mathbb{E}_{(x,y_c,y_r)}\big[\log \pi_\theta(y_c|x) - \log \pi_\theta(y_r|x) - \beta^{-1}\log \pi_{\text{ref}}(y_c|x) + \beta^{-1}\log \pi_{\text{ref}}(y_r|x)\big]',
+      'maximize\; \mathbb{E}_{(x,y)}[r_\theta(x,y)] - \lambda D_{\text{KL}}(\pi_\theta || \pi_{\text{ref}})',
+      'minimize\; \|\pi_\theta - \pi_{\text{ref}}\|_2^2 + \beta A_t',
+      'maximize\; \mathbb{E}_{(x,y)}[\sigma(\pi_\theta(y|x))]$',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 12 derives DPO as a direct optimisation of policy log-probabilities relative to the reference distribution, weighted by β.',
+  },
+  {
+    id: 'beta-role',
+    prompt: 'What role does β play in DPO?',
+    options: [
+      'It controls how strongly the policy shifts relative to the reference distribution.',
+      'It rescales the reward model before PPO updates.',
+      'It sets the gradient clipping range.',
+      'It determines how often new comparisons are collected.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'β is the “temperature” highlighted in Chapter 12; higher values emphasise matching preferred answers while β→0 recovers the reference model.',
+  },
+  {
+    id: 'preference-displacement',
+    prompt: 'What is preference displacement?',
+    options: [
+      'When the policy improves on the training set but degrades on other tasks because it over-weights preference margins.',
+      'When the reference model collapses to uniform probabilities.',
+      'When annotation errors cancel out during batching.',
+      'When the KL penalty becomes too small to compute.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The RLHF book warns that large β or imperfect references can shift preferences toward artefacts the dataset never penalised—a phenomenon called preference displacement.',
+  },
+  {
+    id: 'dpo-vs-rl',
+    prompt: 'How does DPO differ from PPO in data usage?',
+    options: [
+      'DPO works entirely offline on preference tuples without generating new rollouts.',
+      'DPO requires more on-policy samples than PPO.',
+      'DPO needs a reward model to score completions.',
+      'DPO only applies to binary classification tasks.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 12 categorises DPO under direct alignment algorithms: it reuses the preference dataset instead of sampling new rollouts.',
+  },
+  {
+    id: 'variants',
+    prompt: 'Which variant extends DPO with calibration against a reward model?',
+    options: [
+      'REBEL',
+      'GRPO',
+      'RLOO',
+      'TRPO',
+    ],
+    answerIndex: 0,
+    explanation:
+      'REBEL and other extensions like cDPO/IPO incorporate reward-model margins or calibration, as summarised in Chapter 12.2.',
+  },
+];
+
+<EquationSection id="equation" title="DPO Objective">
+  <p>
+    Direct Preference Optimization (DPO) solves the RLHF objective without a reward model. Chapter&nbsp;12 shows that the optimal policy can be
+    written as a tilt of the reference policy using the human preference dataset.
+  </p>
+
+  <MathBlock
+    expression={String.raw`\mathcal{L}_{\text{DPO}}(\pi_\theta; \pi_{\text{ref}}) = -\mathbb{E}_{(x, y_c, y_r) \sim \mathcal{D}}\Big[\log \sigma\big(\beta \big(\log \pi_\theta(y_c|x) - \log \pi_\theta(y_r|x) - \log \pi_{\text{ref}}(y_c|x) + \log \pi_{\text{ref}}(y_r|x)\big)\big)\Big]`}
+  />
+
+  <ModuleCallout>
+    DPO’s gradient (Equation 66 in the book) scales the difference between chosen and rejected log-probabilities by <MathInline expression={String.raw`\sigma(\beta \Delta)`}/>,
+    where <MathInline expression={String.raw`\Delta`}/> is the logit gap relative to the reference model. No separate reward model is required.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Offline Alignment Intuition">
+  <p>
+    Instead of training a reward model and running PPO, DPO asks: “Can we tilt the policy so that it prefers the human choices directly?” The loss above
+    does exactly this, weighting gradient steps by how much the current model already agrees with annotators. When the model already prefers the
+    human answer, the gradients shrink; when it still prefers the rejected answer, the gradients grow.
+  </p>
+  <p>
+    DPO shares the KL safety tether with PPO—it still keeps the policy near the reference—but enjoys a simpler training loop. Chapter&nbsp;12 compares DPO
+    to other direct alignment algorithms like IPO and cDPO that add margins, calibration, or additional weighting to address preference displacement.
+  </p>
+  <ModuleCallout>
+    Offline algorithms shine when you have a strong preference dataset but limited rollout budget. Chapter&nbsp;12 cautions that β must be tuned carefully
+    to avoid overfitting and that high-quality references remain critical.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Debate Judge & Apprentice">
+  <p>
+    Imagine a debate judge who already evaluated pairs of arguments. The apprentice rereads the transcripts and adjusts their wording to match the judge’s
+    favourite picks. No new debates are hosted. DPO is that offline practice loop.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="DPO Playground">
+  <p>
+    Experiment with the β temperature, optional margins, and logit gaps to see how DPO weights each comparison. Then inspect the loss curve compared to
+    the reference policy.
+  </p>
+  <DpoBetaPlayground />
+  <DpoLossSurface />
+  <ModuleCallout>
+    Chapter&nbsp;12 provides a concise implementation sketch. Below is a PyTorch-style training step that mirrors the book’s guidance: compute log-probs for the
+    chosen and rejected completions, subtract the reference log-probs, and apply the log-sigmoid loss.
+  </ModuleCallout>
+
+  ```python
+  import torch
+  import torch.nn.functional as F
+
+  def dpo_step(model, ref_logits, batch, beta=0.1):
+      logp_chosen = model.log_probs(batch['input_ids_chosen'], batch['attention_mask'])
+      logp_rejected = model.log_probs(batch['input_ids_rejected'], batch['attention_mask'])
+
+      ref_chosen = ref_logits['chosen']
+      ref_rejected = ref_logits['rejected']
+
+      delta = (logp_chosen - logp_rejected) - (ref_chosen - ref_rejected)
+      loss = -F.logsigmoid(beta * delta).mean()
+
+      loss.backward()
+      torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+      return loss.item()
+  ```
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>DPO optimises policy log-probabilities directly, avoiding a reward model but retaining the KL tether to the reference.</li>
+    <li>β controls the trade-off between staying close to the reference and matching human preferences—large β can cause preference displacement.</li>
+    <li>Variants such as IPO, cDPO, and REBEL add margins or calibration to mitigate dataset biases (Chapter&nbsp;12.2).</li>
+    <li>Offline processing reduces compute but depends on high-quality preference comparisons and good reference models.</li>
+    <li>Calibrated evaluation (RewardBench, AlpacaEval with length correction) remains necessary to catch displacement effects.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="DPO Check">
+  <p>Quiz yourself on DPO’s formulation, β tuning, and practical concerns from Chapter&nbsp;12.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>
