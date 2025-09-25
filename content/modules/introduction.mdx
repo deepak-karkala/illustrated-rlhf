@@ -6,19 +6,101 @@ import {
   TakeawaysSection,
   AssessmentSection,
   ModuleCallout,
-  InlineDefinition,
 } from '@/components/modules/module-layout';
 import { MathBlock } from '@/components/modules/math-block';
 import { MathInline } from '@/components/modules/math-inline';
 import { PolicyImprovementChart } from '@/components/visualizations/policy-improvement-chart';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Writing student',
+    description:
+      'Drafts multiple completions and absorbs iterative editor feedback. The reward model is that editor, predicting which draft the human would favour.',
+  },
+  {
+    label: 'Arcade bot',
+    description:
+      'Treats each prompt like an arcade level. Higher reward model scores mean better "points"; the KL term is the bumper keeping the bot from reckless, off-distribution moves.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'kl-penalty-role',
+    prompt: 'Why does the RLHF objective include a KL penalty against the supervised reference model?',
+    options: [
+      'It keeps the fine-tuned policy close to the safe supervised baseline while still allowing exploration.',
+      'It speeds up gradient computations by shrinking the policy network.',
+      'It provides extra supervision for training the reward model.',
+      'It increases the learning rate when the model starts converging.'
+    ],
+    answerIndex: 0,
+    explanation:
+      'The KL term discourages the policy from drifting too far from the reference SFT model, so exploration stays grounded in previously supervised behaviour.',
+  },
+  {
+    id: 'reward-model-purpose',
+    prompt: 'What role does the reward model play compared to human annotators?',
+    options: [
+      'It generalises the human rankings to new prompts so we do not need annotators for every completion.',
+      'It replaces the policy network and generates completions directly.',
+      'It filters prompts to decide which ones should reach annotators.',
+      'It tunes the KL penalty by monitoring optimisation stability.'
+    ],
+    answerIndex: 0,
+    explanation:
+      'Humans provide preference samples, but the reward model learns to predict those preferences so the policy can be optimised without constant human scoring.',
+  },
+  {
+    id: 'analogy-match',
+    prompt: 'Which analogy best captures the iterative editing loop introduced in this module?',
+    options: [
+      'Writing student working with an editor on drafts.',
+      'Arcade bot chasing the highest score in each level.',
+      'Math tutor stepping through derivations on a whiteboard.',
+      'Data engineer managing the annotation pipeline.'
+    ],
+    answerIndex: 0,
+    explanation:
+      'The writing student analogy mirrors the supervised demonstrations and iterative feedback that anchor RLHF before reinforcement updates.',
+  },
+  {
+    id: 'loop-next-step',
+    prompt: 'After training the reward model, what happens next in the RLHF loop described here?',
+    options: [
+      'Optimise the policy with PPO (or similar RL) using the reward model and a KL penalty.',
+      'Restart pretraining on a larger web corpus to refresh the base model.',
+      'Freeze the policy and deploy immediately since preference data is already captured.',
+      'Switch to supervised fine-tuning again until annotators collect more demonstrations.'
+    ],
+    answerIndex: 0,
+    explanation:
+      'The reward model supplies dense signals for PPO-style optimisation while the KL penalty constrains the updated policy near the supervised reference.',
+  },
+  {
+    id: 'refresh-loop',
+    prompt: 'What keeps the RLHF system aligned over time according to the introduction?',
+    options: [
+      'Periodically refresh prompts, comparisons, and reward model training with humans in the loop.',
+      'Keep the reward model fixed after the first training run to avoid drift.',
+      'Disable exploration entirely so the policy never changes from the SFT model.',
+      'Swap to a different base model whenever accuracy drops.'
+    ],
+    answerIndex: 0,
+    explanation:
+      'New preference data and occasional retraining of the reward model keep the policy aligned with evolving human judgements.',
+  },
+];
 
 <EquationSection id="equation" title="RLHF Training Objective">
   The RLHF fine-tuning objective balances reward model scores with a KL term that
   keeps the policy close to the supervised reference model:
 
-  <MathBlock
-    expression={String.raw`\max_{\pi_\theta} \; \mathbb{E}_{(x, y) \sim \mathcal{D}_{\pi_\theta}}\left[r_\phi(x, y) - \beta \log \frac{\pi_\theta(y \mid x)}{\pi_{\mathrm{ref}}(y \mid x)}\right]`}
-  />
+<MathBlock
+  expression={String.raw`\max_{\pi_\theta} \; \mathbb{E}_{(x, y) \sim \mathcal{D}_{\pi_\theta}}\left[r_\phi(x, y) - \beta \log \frac{\pi_\theta(y \mid x)}{\pi_{\mathrm{ref}}(y \mid x)}\right]`}
+/>
 
   <ModuleCallout>
     <strong>Notation.</strong>{' '}
@@ -33,40 +115,50 @@ import { PolicyImprovementChart } from '@/components/visualizations/policy-impro
 
 <IntuitionSection id="intuition" title="Why Human Feedback Matters">
   <p>
-    Large language models excel at pattern matching but struggle to capture
-    human preferences directly from text corpora. RLHF introduces a feedback
-    loop: humans express which responses are better, a reward model imitates
-    those judgements, and policy optimisation nudges the model toward behaviour
-    people actually like. The KL penalty acts like a safety tether, ensuring the
+    Large language models excel at pattern matching but struggle to capture human preferences
+    directly from text corpora. RLHF introduces a feedback loop: humans express which responses are
+    better, a reward model imitates those judgements, and policy optimisation nudges the model
+    toward behaviour people actually like. The KL penalty acts like a safety tether, ensuring the
     policy explores new outputs without forgetting the supervised baseline.
   </p>
   <p>
-    In practice this loop transforms vague alignment goals into a concrete
-    optimisation surface. Instead of guessing what a "helpful" answer looks
-    like, the model receives dense reward signals derived from real comparisons.
+    In practice this loop transforms vague alignment goals into a concrete optimisation surface.
+    Instead of guessing what a "helpful" answer looks like, the model receives dense reward signals
+    derived from real comparisons.
   </p>
+  <ModuleCallout>
+    The InstructGPT pipeline that popularised RLHF (Chapter&nbsp;1 of the
+    <a href="https://rlhfbook.com" rel="noreferrer" target="_blank">
+      RLHF book
+    </a>
+    ) follows four stages:
+    <ol>
+      <li>
+        <strong>Pretraining:</strong> learn broad language modelling from web-scale corpora.
+      </li>
+      <li>
+        <strong>Supervised fine-tuning (SFT):</strong> train on curated demonstrations to establish
+        a safe baseline.
+      </li>
+      <li>
+        <strong>Reward modelling:</strong> gather human preference comparisons and fit a reward
+        model.
+      </li>
+      <li>
+        <strong>RLHF optimisation:</strong> update the policy against the reward model while
+        constraining with a KL penalty.
+      </li>
+    </ol>
+    Each subsequent module in this guide drills into one of these phases.
+  </ModuleCallout>
 </IntuitionSection>
 
 <AnalogySection id="analogy" title="Analogy: Writing Coach Meets Arcade Bot">
+  <p>Picture two characters from the analogy toolbox working together:</p>
+  <AnalogyComparison items={analogyItems} />
   <p>
-    Picture two characters from the analogy toolbox working together:
-  </p>
-  <ul>
-    <li>
-      <InlineDefinition term="Writing student">Drafts several completions and
-      listens to iterative editor feedback. The reward model stands in for that
-      editor, predicting which draft the human would prefer.</InlineDefinition>
-    </li>
-    <li>
-      <InlineDefinition term="Arcade bot">Treats each prompt like a level in a
-      retro game. The higher the reward model score, the better the "score" for
-      that level. The KL term is the invisible bumper keeping the bot from
-      crashing into weird, off-distribution moves.</InlineDefinition>
-    </li>
-  </ul>
-  <p>
-    Together they illustrate how RLHF blends human judgement (editor) with
-    reinforcement-style exploration (arcade bot) to polish model behaviour.
+    Together they illustrate how RLHF blends human judgement (editor) with reinforcement-style
+    exploration (arcade bot) to polish model behaviour.
   </p>
 </AnalogySection>
 
@@ -75,8 +167,10 @@ import { PolicyImprovementChart } from '@/components/visualizations/policy-impro
     <li>Collect prompts and generate candidate completions with the SFT model.</li>
     <li>Ask humans to rank the completions. Store preference pairs.</li>
     <li>Train a reward model $r_\phi$ to predict those preferences.</li>
-    <li>Optimise the policy $\pi_\theta$ with PPO/other RL algorithms using the
-        reward model and KL penalty.</li>
+    <li>
+      Optimise the policy $\pi_\theta$ with PPO/other RL algorithms using the reward model and KL
+      penalty.
+    </li>
     <li>Periodically refresh data and repeat, keeping humans in the loop.</li>
   </ol>
   <ModuleCallout>
@@ -93,18 +187,14 @@ import { PolicyImprovementChart } from '@/components/visualizations/policy-impro
     <li>Human preference data is distilled into a reward model $r_\phi$.</li>
     <li>The KL divergence keeps the policy grounded near the SFT model.</li>
     <li>Analogy lenses (writer, tutor, arcade bot) make the loop easier to reason about.</li>
+    <li>
+      The InstructGPT pipeline guides modern post-training systems: pretrain → SFT → reward
+      modelling → RLHF.
+    </li>
   </ul>
 </TakeawaysSection>
 
 <AssessmentSection id="assessment" title="Quick Self-Check">
-  <ol>
-    <li>Why is a KL penalty included in the RLHF objective?</li>
-    <li>What role does the reward model play compared to the human annotators?</li>
-    <li>Which analogy lens clicks best for you? Can you explain the loop using it?</li>
-  </ol>
-  <p className="text-sm text-muted-foreground">
-    (Answers: keep behaviour near the reference SFT model; scalably predict human
-    preference; choose any lens, but make sure you can narrate prompts &rarr; feedback &rarr;
-    updated policy!)
-  </p>
+  <p>Work through the questions below and use the instant feedback to spot any gaps.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
 </AssessmentSection>

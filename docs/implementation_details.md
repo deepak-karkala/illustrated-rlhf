@@ -238,3 +238,65 @@
 - Add more visualization types (preference comparisons, PPO updates) using the
   same framework.
 - Consider lazy loading D3-heavy components if bundle size becomes a concern.
+
+## Issue 1.4.1 – Introduction to RLHF Module (2025-09-24)
+
+### Summary
+
+- Expanded the MDX introduction lesson with the four-stage RLHF pipeline
+  narrative and richer takeaways.
+- Embedded the new policy reward visualization and linked to downstream
+  reward/policy modules.
+- Added a five-question interactive self-check with instant feedback aligned
+  with the book’s introductory chapter.
+
+### Architecture Notes
+
+- Module content lives in `content/modules/introduction.mdx`, leveraging layout
+  helpers, `MathBlock`, and the visualization framework.
+- Module metadata (`src/lib/modules.ts`) continues to drive TOC rendering, so
+  the new sections automatically appear.
+- Interactive assessment powered by `AssessmentQuiz`
+  (`src/components/modules/assessment-quiz.tsx`) keeps quiz logic reusable for
+  future modules.
+
+### Testing & Verification
+
+- `npm run lint`
+- `npx tsc --noEmit --incremental false`
+- Manual walkthrough of `/modules/introduction` to verify narrative flow,
+  visualization interactivity, and quiz updates.
+- `npm run build`
+
+### Follow-ups
+
+- Once reward modeling/PPO modules land, cross-link back to this introduction
+  for loop closure.
+- Gather early learner feedback on the self-check questions and iterate.
+
+## Issue 1.4.2 – MDX Build Failure Fix (2025-09-25)
+
+### Summary
+
+- Resolved the `mdxRs` parser crash in `content/modules/introduction.mdx` by
+  moving the analogy comparison data into a shared constant and reusing it in
+  the JSX tree.
+- Restored the inline analogy copy so the MDX content matches the intended
+  narrative while still compiling under the Rust MDX pipeline.
+
+### Architecture Notes
+
+- Exported `analogyItems` alongside the MDX imports, allowing other modules (or
+  tests) to reuse the same dataset if required.
+- Keeping the object literal outside of the JSX attribute sidesteps SWC’s
+  expression parser limitations while preserving type safety when the file is
+  imported.
+
+### Testing & Verification
+
+- `npm run build`
+
+### Follow-ups
+
+- Consider extracting other large attribute literals in MDX content into shared
+  constants to avoid future parser regressions when `mdxRs` is enabled.
