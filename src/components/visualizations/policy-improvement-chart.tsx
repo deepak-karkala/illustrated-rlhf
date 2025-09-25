@@ -167,7 +167,9 @@ export function PolicyImprovementChart(): JSX.Element {
       }
       activeAnalogy={activeAnalogy}
     >
-      <svg ref={svgRef} role="presentation" focusable={false} />
+      <div ref={containerRef} className="max-w-full overflow-hidden">
+        <svg ref={svgRef} role="presentation" focusable={false} className="w-full" />
+      </div>
     </VisualizationContainer>
   );
 }
