@@ -1,0 +1,159 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { KlPenaltyPlayground } from '@/components/visualizations/kl-penalty-playground';
+import { RegularizationTradeoff } from '@/components/visualizations/regularization-tradeoff';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+
+export const analogyItems = [
+  {
+    label: 'Safety harness',
+    description:
+      'Keeps the climber (policy) tethered to the wall (reference model) so new moves never drift too far during RLHF optimisation.',
+  },
+  {
+    label: 'Coach with metronome',
+    description:
+      'Sets the tempo for exploration versus discipline—mirroring KL weights, entropy bonuses, and auxiliary losses from Chapter 8.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'kl-definition',
+    prompt: 'How does Chapter 8 define the KL regularised reward used in RLHF?',
+    options: [
+      'r = r_θ - λ D_{KL}(π_{RL} || π_{ref})',
+      'r = r_θ + λ D_{KL}(π_{ref} || π_{RL})',
+      'r = r_θ - λ ||π_{RL} - π_{ref}||_2^2',
+      'r = r_θ / (1 + λ)',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Equation (20) in Chapter 8 subtracts λ D_{KL}(π_{RL} || π_{ref}) from the reward to penalise divergence.',
+  },
+  {
+    id: 'kl-intuition',
+    prompt: 'What intuition does the book provide for the KL penalty?',
+    options: [
+      'It keeps the policy close to a trusted reference model while still allowing improvement.',
+      'It increases the reward scale so training converges faster.',
+      'It reduces gradient variance by averaging rewards.',
+      'It eliminates the need for reward models entirely.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 8 frames KL as a tether that preserves the style and safety of the reference policy.',
+  },
+  {
+    id: 'aux-nll',
+    prompt: 'Why do some teams add an auxiliary NLL term according to Chapter 8?',
+    options: [
+      'To preserve pretraining accuracy and mitigate preference displacement.',
+      'To reduce computational cost.',
+      'To remove the need for KL penalties.',
+      'To train reward models faster.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Equation (24–26) shows adding log-likelihood terms to balance preference optimisation with factual accuracy.',
+  },
+  {
+    id: 'entropy-bonus',
+    prompt: 'What role do entropy bonuses play in regularisation?',
+    options: [
+      'They encourage exploration to counteract strong KL penalties.',
+      'They compute preference margins automatically.',
+      'They normalise gradients before PPO.',
+      'They enforce deterministic sampling.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 8 lists entropy bonuses alongside KL as tools to prevent mode collapse.',
+  },
+  {
+    id: 'overopt-risk',
+    prompt: 'Which failure mode motivates regularisation in Chapter 8?',
+    options: [
+      'Over-optimisation where the reward model is exploited, leading to nonsensical text.',
+      'Gradient vanishing during pretraining.',
+      'Tokenizer vocabulary drift.',
+      'Hardware instability on GPUs.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter begins with examples of degenerate outputs when the reward proxy is over-optimised.',
+  },
+];
+
+<EquationSection id="equation" title="KL Regularised Objective">
+  <p>
+    Chapter&nbsp;8 writes the RLHF reward as the learned reward minus regularisation terms. Using the learned reward <MathInline expression={String.raw`r_\theta`} /> and KL
+    penalty weight <MathInline expression={String.raw`\lambda`} />, the per-sample reward becomes:
+  </p>
+
+  <MathBlock expression={String.raw`r = r_\theta - \lambda D_{\mathrm{KL}}(\pi_{RL}(y|x) \Vert \pi_{\text{ref}}(y|x))`} />
+
+  <ModuleCallout>
+    Auxiliary losses (e.g., log-likelihood on pretraining data or margin terms) can be added with additional coefficients, as described in Equations (24–27).
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Controlling Over-Optimisation">
+  <p>
+    RLHF optimises against proxy rewards. Without constraints, models “game” the reward model—producing verbose or nonsensical outputs. KL penalties keep
+    updates close to the reference policy, while entropy bonuses and auxiliary NLL terms maintain diversity and factual accuracy.
+  </p>
+  <p>
+    Chapter&nbsp;8 encourages monitoring KL, reward statistics, and qualitative samples together. Regularisation is not a static formula but a feedback loop: adjust
+    λ, entropy bonuses, or auxiliary losses when you observe reward hacking or over-refusal.
+  </p>
+  <ModuleCallout>
+    Tuning checklist:
+    <ol>
+      <li><strong>Target KL.</strong> Track actual KL versus a desired range; adapt λ accordingly.</li>
+      <li><strong>Entropy bonus.</strong> Use small bonuses to sustain exploration against strong KL weights.</li>
+      <li><strong>Auxiliary NLL.</strong> Periodically reinforce pretraining accuracy to avoid preference displacement.</li>
+    </ol>
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Safety Harness for RLHF">
+  <p>
+    The base model is a climber scaling new routes. KL penalties are the safety harness keeping the climber connected to the wall; entropy bonuses and auxiliary
+    losses are the belayer adjusting slack to balance safety and freedom.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Regularisation Lab">
+  <p>
+    Tweak λ, target KL, and entropy bonuses to see how Chapter&nbsp;8’s techniques shape reward curves and trade-offs.
+  </p>
+  <KlPenaltyPlayground />
+  <RegularizationTradeoff />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>KL penalties keep policies close to a trusted reference; adapt λ to hit a target KL range.</li>
+    <li>Entropy bonuses and auxiliary NLL terms complement KL by preserving exploration and factual grounding.</li>
+    <li>Monitor reward hacking, mode collapse, and preference displacement—regularisation is a response to observed failure modes.</li>
+    <li>Reference models can be instruction-tuned checkpoints or previous RLHF snapshots; pick one with reliable behaviour.</li>
+    <li>Regularisation choices should be documented alongside hyperparameters for reproducibility.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Regularisation Check">
+  <p>Confirm your understanding of KL control, auxiliary losses, and Chapter&nbsp;8’s guidance.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

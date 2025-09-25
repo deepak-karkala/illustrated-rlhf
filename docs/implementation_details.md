@@ -472,3 +472,37 @@
   available.
 - Link directly to problem-setup, reward-modeling, and PPO modules for guided
   learning flows.
+
+## Issue 2.1.3 – Regularization Module (2025-09-27)
+
+### Summary
+
+- Added the Chapter 8 regularisation module covering KL penalties, entropy
+  bonuses, and auxiliary losses that stabilise RLHF.
+- Built interactive KL penalty and trade-off playgrounds to visualise how λ and
+  entropy bonuses balance reward gains with safety.
+- Captured auxiliary NLL adaptations and delivered a quiz on tuning decisions
+  and failure modes.
+
+### Architecture Notes
+
+- Module authored in `content/modules/regularization.mdx`, reusing shared
+  section components and `AssessmentQuiz`.
+- Updated navigation metadata (`src/lib/modules.ts`) and loader
+  (`src/lib/module-content.ts`) to surface the chapter.
+- Visualisations implemented in
+  `src/components/visualizations/kl-penalty-playground.tsx` and
+  `src/components/visualizations/regularization-tradeoff.tsx`, both using
+  `VisualizationContainer` plus slider controls.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual QA of KL curves, trade-off indicators, and quiz explanations.
+
+### Follow-ups
+
+- Connect the playground to real training logs (e.g., target KL traces) when
+  available.
+- Extend coverage with margin-based reward regularisation variants (e.g., Llama
+  2’s margin loss) if future chapters provide datasets.
