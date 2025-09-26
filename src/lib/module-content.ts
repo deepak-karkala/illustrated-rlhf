@@ -9,6 +9,7 @@ const MODULE_IMPORTERS: Record<string, () => Promise<{ default: (props: any) => 
   'direct-preference-optimization': () =>
     import('../../content/modules/direct-preference-optimization.mdx'),
   'constitutional-ai': () => import('../../content/modules/constitutional-ai.mdx'),
+  'reasoning-training': () => import('../../content/modules/reasoning-training.mdx'),
 };
 
 export async function getModuleContent(slug: string) {

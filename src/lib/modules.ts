@@ -501,6 +501,61 @@ export const MODULES: ModuleNavItem[] = [
       },
     ],
   },
+  {
+    id: 'module-reasoning-training',
+    slug: 'reasoning-training',
+    title: 'Reasoning Training & Inference Scaling',
+    description: 'Train RLVR models and scale inference-time computation for reasoning',
+    phase: 'phase-3',
+    analogy: 'advanced',
+    prerequisites: ['module-constitutional-ai', 'module-policy-gradients'],
+    estimated_time: 40,
+    difficulty: 'advanced',
+    tags: ['reasoning', 'rlvr', 'inference'],
+    summary:
+      'Walk through RL with verifiable rewards, chain-of-thought refinement, and inference-time scaling techniques used by o1, DeepSeek R1, and Tulu 3.',
+    order: 9,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'RLVR Objective',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'From STaR to RLVR',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Math Tutor Studio',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'Reasoning Practice Lab',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Operational Notes',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Reasoning Training Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
 ];
 
 export function getModuleBySlug(slug: string): ModuleNavItem | undefined {

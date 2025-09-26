@@ -1,0 +1,153 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+import { ReasoningChainLab } from '@/components/visualizations/reasoning-chain-lab';
+import { RlvrRewardExplorer } from '@/components/visualizations/rlvr-reward-explorer';
+import { InferenceScalingChart } from '@/components/visualizations/inference-scaling-chart';
+
+export const analogyItems = [
+  {
+    label: 'Math studio',
+    description:
+      'A tutor checks each algebra step against an answer key. RLVR does the same with verifiable rewards for GSM8K-style math.',
+  },
+  {
+    label: 'Code judge',
+    description:
+      'Automated tests confirm every program revision. Reasoning models bounce ideas until the unit tests pass.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'rlvr-definition',
+    prompt: 'What distinguishes RL with Verifiable Rewards (RLVR) from standard preference-based RLHF?',
+    options: [
+      'RLVR supplies binary or scalar rewards from an external verifier instead of human preferences.',
+      'RLVR trains only on synthetic constitutions and ignores verifiers entirely.',
+      'RLVR forbids reusing traces across iterations.',
+      'RLVR requires on-policy sampling but never distillation.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 14 defines RLVR as reinforcement finetuning that pulls rewards from proofs, unit tests, or execution traces rather than human comparisons.',
+  },
+  {
+    id: 'historical-context',
+    prompt: 'Which early reasoning method approximated policy gradient while filtering traces with cross-entropy?',
+    options: ['STaR', 'DeepSeek R1', 'Tulu 3', 'VinePPO'],
+    answerIndex: 0,
+    explanation:
+      'Section 14.2.1 notes the STaR family as a precursor that filtered traces and used cross-entropy despite targeting policy gradients.',
+  },
+  {
+    id: 'modern-models',
+    prompt: 'Why did o1 and DeepSeek R1 highlight inference-time scaling?',
+    options: [
+      'They demonstrated that higher token budgets and self-consistency samples correlate with downstream accuracy.',
+      'They proved inference-time compute has no effect on reasoning benchmarks.',
+      'They eliminated the need for RLVR entirely.',
+      'They only improved dataset curation, not model serving.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 14 emphasises the strong correlation between longer responses, more samples, and benchmark gains in recent reasoning models.',
+  },
+  {
+    id: 'verification-sources',
+    prompt: 'Which of the following is a verifiable reward signal cited for reasoning training?',
+    options: [
+      'Unit tests or execution sandboxes for code problems.',
+      'Unstructured human thumbs-up icons.',
+      'Random number generators.',
+      'Model perplexity on Wikipedia text.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter lists unit tests, math proof checkers, and theorem verifiers as canonical RLVR signals.',
+  },
+  {
+    id: 'distillation-role',
+    prompt: 'How do modern reasoning recipes use distillation according to Chapter 14?',
+    options: [
+      'They distill RLVR-trained teachers into instruction-tuned students to share reasoning skills.',
+      'They avoid distillation because it harms reasoning quality.',
+      'They distill base models before any RLVR passes.',
+      'Distillation is only used for constitution tuning, not reasoning.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 14 describes training pipelines where a large RLVR teacher generates traces that instruction tuning then distills into smaller students.',
+  },
+];
+
+<EquationSection id="equation" title="RLVR Objective">
+  <p>
+    Chapter&nbsp;14 frames RL with Verifiable Rewards (RLVR) as an extension of the RLHF objective where reward signals come from automated checkers instead of human ratings. For a verifier
+    <MathInline expression={String.raw`V(x, y) \in \{0, 1\}`} />, the optimisation step looks like PPO or policy gradient with binary rewards.
+  </p>
+
+  <MathBlock
+    expression={String.raw`\begin{aligned}
+\max_{\theta} \; \mathbb{E}_{x \sim \mathcal{D}, \; y \sim \pi_{\theta}(\cdot \mid x)}\big[ V(x, y) \cdot A_{\theta}(x, y) \big] \\
+\text{where } A_{\theta}(x, y) = V(x, y) - b(x) \text{ or uses a critic trained on verifier outcomes.}
+\end{aligned}`}
+  />
+
+  <ModuleCallout>
+    When the verifier returns structured feedback (unit tests, proof traces), teams often log extra metadata so they can reuse successful trajectories for distillation.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="From STaR to RLVR">
+  <p>
+    Earlier work like STaR and TRICE (2022-2023) approximated policy gradient on math problems by filtering traces and applying cross-entropy updates. Chapter&nbsp;14 explains how modern systems such as Tulu&nbsp;3, VinePPO, and DeepSeek&nbsp;R1 build on these ideas with binary rewards from execution engines and proof checkers.
+  </p>
+  <p>
+    Reinforcement finetuning lets the model practice a narrow set of prompts hundreds of times, reinforcing correct answers instead of simply imitating reference text. The result is a tutor model that plans, verifies, and revises before committing to an answer. Distillation then compresses that behaviour into smaller students that serve cheaply.
+  </p>
+  <ModuleCallout>
+    Measuring progress means tracking verifier pass rate, reward deltas, and inference tokens per answer. Chapter&nbsp;14 links all three to the surge of reasoning models like o1, R1, and Tulu&nbsp;3.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Math Tutor Studio">
+  <p>
+    Imagine a classroom where every attempt at a proof is checked instantly. Students revise until the grader signs off, then the solution is archived for future lessons. RLVR converts that workflow into code and math benchmarks.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Reasoning Practice Lab">
+  <p>
+    Use the labs to step through RLVR-style revisions, inspect verifier gains per domain, and see how inference-time scaling affects accuracy, latency, and cost.
+  </p>
+  <ReasoningChainLab />
+  <RlvrRewardExplorer />
+  <InferenceScalingChart />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>Start with verifiable benchmarks (math, code, logic) so rewards are deterministic.</li>
+    <li>Log every successful trajectory for downstream distillation and evaluation.</li>
+    <li>Plan for inference-time scaling: longer chains and self-consistency votes raise accuracy but increase latency.</li>
+    <li>Mix RLVR with instruction tuning to spread reasoning patterns to smaller models.</li>
+    <li>Track verifier coverage; if too many prompts return zero reward, broaden the dataset or relax constraints.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Reasoning Training Check">
+  <p>Review RLVR fundamentals, historical context, and scaling trade-offs from Chapter&nbsp;14.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

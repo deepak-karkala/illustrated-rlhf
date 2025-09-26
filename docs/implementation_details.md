@@ -625,3 +625,45 @@
   CAI releases) once available.
 - Consider surfacing downloadable constitution templates alongside the builder
   for quick experimentation.
+
+## Issue 3.1.2 – Reasoning Training Module (2025-09-28)
+
+### Summary
+
+- Added the reasoning training module aligned with Chapter 14, covering RLVR,
+  chain-of-thought refinement, and inference scaling.
+- Built three interactive labs: reasoning chain walkthroughs, RLVR reward gains
+  per domain, and inference-time scaling trade-offs.
+- Connected the narrative to modern systems (o1, DeepSeek R1, Tulu 3) and
+  historic precursors (STaR, TRICE, VinePPO).
+
+### Architecture Notes
+
+- New content at `content/modules/reasoning-training.mdx` reuses the module
+  layout and imports the new visual components.
+- `src/lib/modules.ts` and `src/lib/module-content.ts` now register the
+  `reasoning-training` slug so navigation and dynamic loading recognise the
+  chapter.
+- Visualisations:
+  - `ReasoningChainLab`
+    (`src/components/visualizations/reasoning-chain-lab.tsx`) steps through
+    verifier-backed reasoning traces.
+  - `RlvrRewardExplorer`
+    (`src/components/visualizations/rlvr-reward-explorer.tsx`) models accuracy,
+    reward gain, and verifier cost as RLVR iterations grow.
+  - `InferenceScalingChart`
+    (`src/components/visualizations/inference-scaling-chart.tsx`) contrasts pass
+    rate, latency, and cost vs. tokens and self-consistency samples.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual inspection of `/modules/reasoning-training` to validate interactive
+  behaviour and quiz explanations.
+
+### Follow-ups
+
+- Replace heuristic curves with empirical metrics once benchmark data is
+  available.
+- Extend the reasoning chain lab with user-authored prompts when custom datasets
+  arrive.
