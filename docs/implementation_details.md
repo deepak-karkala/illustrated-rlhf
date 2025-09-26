@@ -667,3 +667,41 @@
   available.
 - Extend the reasoning chain lab with user-authored prompts when custom datasets
   arrive.
+
+## Issue 3.1.3 – Tool Use & Function Calling Module (2025-09-28)
+
+### Summary
+
+- Authored the tool-use chapter using Chapter 15 guidance, covering tool-call
+  formatting, MCP architecture, and masking practices.
+- Built interactive labs for transcript inspection, latency budgeting, and
+  workflow design to mirror MCP resources/prompts/tools.
+- Highlighted practical trade-offs: schema handling, retries, and connection to
+  MCP clients/servers.
+
+### Architecture Notes
+
+- Tool content lives in `content/modules/tool-use.mdx`, importing new
+  visualisations.
+- `src/lib/modules.ts` and `src/lib/module-content.ts` register the `tool-use`
+  slug so the App Router loads the chapter.
+- Visualisations:
+  - `ToolCallSimulator`
+    (`src/components/visualizations/tool-call-simulator.tsx`) renders weather,
+    Python, and MCP call transcripts.
+  - `ToolLatencyChart` (`src/components/visualizations/tool-latency-chart.tsx`)
+    estimates latency and reliability as calls stack up.
+  - `ToolWorkflowDesigner`
+    (`src/components/visualizations/tool-workflow-designer.tsx`) helps plan
+    resource/prompt/tool pipelines inspired by MCP.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual walkthrough of `/modules/tool-use` checking interactive selectors and
+  quiz behaviour.
+
+### Follow-ups
+
+- Replace heuristic latency curves with telemetry once available.
+- Add editable workflow templates sourced from real MCP deployments.

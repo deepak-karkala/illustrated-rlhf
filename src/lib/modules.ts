@@ -556,6 +556,61 @@ export const MODULES: ModuleNavItem[] = [
       },
     ],
   },
+  {
+    id: 'module-tool-use',
+    slug: 'tool-use',
+    title: 'Tool Use & Function Calling',
+    description: 'Teach models to call APIs and orchestrate external tools',
+    phase: 'phase-3',
+    analogy: 'advanced',
+    prerequisites: ['module-reasoning-training', 'module-constitutional-ai'],
+    estimated_time: 35,
+    difficulty: 'advanced',
+    tags: ['tool-use', 'function-calling', 'mcp'],
+    summary:
+      'Implement tool-calling policies, format messages, and reason over multi-step API workflows using Chapter 15 guidance.',
+    order: 10,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'Tool-Calling Objective',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'Why Structured Tool Use Works',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Control Room Conductor',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'Tool Orchestration Lab',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Operational Notes',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Tool Use Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
 ];
 
 export function getModuleBySlug(slug: string): ModuleNavItem | undefined {

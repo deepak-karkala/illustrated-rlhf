@@ -1,0 +1,157 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+import { ToolCallSimulator } from '@/components/visualizations/tool-call-simulator';
+import { ToolLatencyChart } from '@/components/visualizations/tool-latency-chart';
+import { ToolWorkflowDesigner } from '@/components/visualizations/tool-workflow-designer';
+
+export const analogyItems = [
+  {
+    label: 'Control room conductor',
+    description:
+      'A dispatcher routes calls to specialists, records responses, and reports back. Chapter 15 treats the assistant as the conductor for external tools.',
+  },
+  {
+    label: 'API switchboard',
+    description:
+      'Operators plug into different lines based on the request. Tool-using models select resources, prompts, and tools in the Model Context Protocol.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'tool-objective',
+    prompt: 'What is the optimisation objective when adding tool calls according to Chapter 15?',
+    options: [
+      'Maximise task reward while masking tool output tokens so the model only learns to request tools, not to memorise their return values.',
+      'Minimise tool latency even if the task fails.',
+      'Predict the raw tool output tokens with cross-entropy loss.',
+      'Avoid formatting messages as JSON or Python.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 15 specifies that tool outputs are masked from the loss; optimisation focuses on choosing and sequencing calls that lead to higher task rewards.',
+  },
+  {
+    id: 'formatting',
+    prompt: 'Which message format detail does Chapter 15 highlight when training tool use?',
+    options: [
+      "Chat templates convert structured tool calls into token streams, so the dataset must follow the provider's expected schema.",
+      'Tool calls can only be plain text with no structure.',
+      'Models must never include function arguments.',
+      'Per-turn masking is unnecessary because the model should predict tool outputs verbatim.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter emphasises JSON/Python encoding and provider-specific chat templates for tool invocation messages.',
+  },
+  {
+    id: 'mcp',
+    prompt: 'What does the Model Context Protocol (MCP) introduce?',
+    options: [
+      'A shared interface where servers expose resources, prompts, and tools, letting clients connect multiple models or back-ends.',
+      'A reinforcement learning algorithm for verifiable rewards.',
+      'A new tokenizer that replaces JSON.',
+      'A hardware accelerator for tool execution.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 15 describes MCP as a way to wrap capabilities into servers that any tool-using model can access via a common schema.',
+  },
+  {
+    id: 'masking',
+    prompt: 'Why are tool outputs masked during training?',
+    options: [
+      "To prevent the model from memorising results it does not generate, keeping the focus on planning calls.",
+      'Because masking improves perplexity on Wikipedia.',
+      'To hide latency from operators.',
+      'Because JSON cannot be tokenised.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 15 notes that masking ensures the model learns to request tools, relying on the tool runtime to produce outputs.',
+  },
+  {
+    id: 'latency',
+    prompt: 'What trade-off does the chapter emphasise when adding more tool calls?',
+    options: [
+      'Accuracy often improves but latency and failure probability rise with each round trip.',
+      'Latency always falls as more tools are added.',
+      'Tool calls reduce compute cost even if the tool fails.',
+      'More tool calls remove the need for system prompts.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 15 explicitly mentions latency management, retries, and schema validation as tool chains grow longer.',
+  },
+];
+
+<EquationSection id="equation" title="Tool-Calling Objective">
+  <p>
+    Chapter&nbsp;15 describes tool calling as extending the assistant policy with an action space that includes structured function invocations. During training, tool outputs are masked and the reward focuses on whether the final answer or tool sequence solves the task.
+  </p>
+
+  <MathBlock
+    expression={String.raw`\begin{aligned}
+\max_{\theta} \; \mathbb{E}_{x \sim \mathcal{D}}\Big[ R\big(x, y_{1:T}, o_{1:T}\big) \Big] \\
+\text{s.t. } y_t \in \{\text{text tokens},\; \text{tool\_call}(f, a)\}, \; o_t = \text{Tool}(f, a)
+\end{aligned}`}
+  />
+
+  <ModuleCallout>
+    Mask tool tokens when computing the loss. Chapter&nbsp;15 warns that otherwise the model overfits to observed outputs instead of planning calls.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Why Structured Tool Use Works">
+  <p>
+    Tool use shifts the assistant from answering directly to orchestrating resources, prompts, and tools. The assistant decides when to fetch data, when to run code, and how to summarise the results for the user. Providers expose these capabilities as JSON or Python snippets, and chat templates convert them into token streams.
+  </p>
+  <p>
+    Chapter&nbsp;15 highlights the Model Context Protocol: servers expose resources (read-only data), prompts (prebuilt workflows), and tools (actions). Clients and hosts remain decoupled, so the same tools can be reused across models by swapping the middle layer.
+  </p>
+  <ModuleCallout>
+    Implementations should handle retries, schema validation, and masking of tool outputs. Multi-turn formatting requires splitting assistant turns into segments around each tool call.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Control Room Conductor">
+  <p>
+    A conductor routes calls to the right specialist, records their response, and reports back to the customer. Tool-using assistants do the same with APIs and plug-ins.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Tool Orchestration Lab">
+  <p>
+    Explore sample transcripts, plan latency budgets, and sketch MCP-style workflows before implementing them in your own stack.
+  </p>
+  <ToolCallSimulator />
+  <ToolLatencyChart />
+  <ToolWorkflowDesigner />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>Keep a consistent schema per provider; chat templates translate JSON or Python into tokens.</li>
+    <li>Mask tool outputs and log them separately for auditing.</li>
+    <li>Track end-to-end latency and success rate as you add more calls; implement retries.</li>
+    <li>Leverage MCP servers to reuse resources and tools across products.</li>
+    <li>Distinguish between reasoning tokens and tool output tokens when mixing with reasoning models.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Tool Use Check">
+  <p>Verify that you understand tool schemas, MCP workflows, and latency trade-offs from Chapter&nbsp;15.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>
