@@ -446,6 +446,61 @@ export const MODULES: ModuleNavItem[] = [
       },
     ],
   },
+  {
+    id: 'module-constitutional-ai',
+    slug: 'constitutional-ai',
+    title: 'Constitutional AI & AI Feedback',
+    description: 'Leverage AI-written constitutions to scale safe alignment data',
+    phase: 'phase-3',
+    analogy: 'advanced',
+    prerequisites: ['module-reward-modeling', 'module-dpo'],
+    estimated_time: 35,
+    difficulty: 'advanced',
+    tags: ['constitutional-ai', 'rlaif', 'ai-feedback'],
+    summary:
+      'Build synthetic critique and preference data with constitutions, compare AI vs human feedback, and inspect iteration workflows.',
+    order: 8,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'Constitutional Feedback Pipeline',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'Why AI Feedback Works',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Editorial Board Charter',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'Constitution Workshop',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Operational Notes',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Constitutional AI Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
 ];
 
 export function getModuleBySlug(slug: string): ModuleNavItem | undefined {

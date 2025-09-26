@@ -582,3 +582,46 @@
   experiments.
 - Add additional scenarios (e.g., KL regularisation sweeps) once corresponding
   chapters ship.
+
+## Issue 3.1.1 – Constitutional AI Module (2025-09-27)
+
+### Summary
+
+- Authored the Constitutional AI & AI Feedback module using Chapter 13 material,
+  covering constitutions, synthetic critiques, and preference generation.
+- Added three interactive labs: a constitution builder with critique timelines,
+  an AI-versus-human feedback cost planner, and an iteration explorer for
+  self-improvement runs.
+- Documented real-world deployments (Claude, ChatGPT, Llama series, Nemotron)
+  and highlighted bias/oversight trade-offs required for RLAIF pipelines.
+
+### Architecture Notes
+
+- New MDX content in `content/modules/constitutional-ai.mdx` uses existing
+  layout helpers and imports the new visualisations.
+- Updated `src/lib/modules.ts` metadata and `src/lib/module-content.ts` importer
+  for the `constitutional-ai` slug so navigation and dynamic loading work.
+- Implemented reusable visual components:
+  - `ConstitutionBuilder`
+    (`src/components/visualizations/constitution-builder.tsx`) renders scenario
+    timelines that apply constitution principles in sequence.
+  - `AiFeedbackComparison`
+    (`src/components/visualizations/ai-feedback-comparison.tsx`) estimates cost,
+    turnaround, and alignment scores for blended human/AI feedback.
+  - `ConstitutionalIterationExplorer`
+    (`src/components/visualizations/constitutional-iteration-explorer.tsx`)
+    models win rates, hallucination reduction, and bias index across critique
+    iterations.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual review of `/modules/constitutional-ai` to verify interactive controls,
+  quiz behaviour, and navigation entries.
+
+### Follow-ups
+
+- Expand visualisations with real benchmarking data (e.g., win rates from public
+  CAI releases) once available.
+- Consider surfacing downloadable constitution templates alongside the builder
+  for quick experimentation.

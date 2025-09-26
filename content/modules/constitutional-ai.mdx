@@ -1,0 +1,161 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+import { ConstitutionBuilder } from '@/components/visualizations/constitution-builder';
+import { AiFeedbackComparison } from '@/components/visualizations/ai-feedback-comparison';
+import { ConstitutionalIterationExplorer } from '@/components/visualizations/constitutional-iteration-explorer';
+
+export const analogyItems = [
+  {
+    label: 'Editorial charter',
+    description:
+      'A newsroom agrees on a charter so every editor applies the same lens before publishing. Chapter 13 uses written principles the same way.',
+  },
+  {
+    label: 'Mock debate judges',
+    description:
+      'Critics score practice debates using a rubric. Constitutional AI has an LLM judge samples with the constitution as its rubric.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'rlaif-definition',
+    prompt: 'What distinction does Chapter 13 draw between human preference data and AI feedback?',
+    options: [
+      'Human data has higher noise but lower bias; AI feedback has lower noise but higher bias.',
+      'Both human and AI data have identical noise and bias characteristics.',
+      'AI feedback is more expensive yet less scalable than human data.',
+      'Human data cannot be used for RLHF once AI feedback is available.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 13 frames human data as high-noise/low-bias and synthetic data as low-noise/high-bias, motivating blended pipelines.',
+  },
+  {
+    id: 'constitution-steps',
+    prompt: 'In the instruction data workflow Bai et al. describe, what happens after sampling a principle c_i?',
+    options: [
+      'The model revises its latest answer so it aligns with the sampled principle before the next critique.',
+      'The reward model is retrained from scratch on the principle.',
+      'The principle is discarded and a human labels the example.',
+      'The original prompt is replaced with a new one drawn from the constitution.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Section 13.1 applies each principle as a critique, producing y_i revisions until the answer satisfies the chosen principle.',
+  },
+  {
+    id: 'cost-comparison',
+    prompt: 'Why does Chapter 13 highlight AI-written feedback as a lever for experimentation?',
+    options: [
+      'Synthetic feedback costs cents per prompt instead of dollars, so smaller teams can afford RLHF loops.',
+      'AI-written feedback automatically removes all bias.',
+      'AI feedback eliminates the need for any reward models.',
+      'Humans refuse to label preference data at scale.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter quotes sub-cent costs for AI feedback compared to dollar-scale human labels, enabling rapid iteration.',
+  },
+  {
+    id: 'applications',
+    prompt: 'Which models does the chapter cite as early adopters of Constitutional AI?',
+    options: [
+      'Anthropic Claude and ChatGPT era systems such as GPT-4 variants.',
+      'Image generation models like Stable Diffusion only.',
+      'OpenAI Codex exclusively.',
+      'Robotic control agents trained on Mujoco tasks.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Page 88 mentions Claude, ChatGPT, Llama series, and other chat models using constitutional or broader AI feedback recipes.',
+  },
+  {
+    id: 'bias-control',
+    prompt: 'According to Chapter 13, what is a recommended mitigation when heavy AI feedback introduces constitution bias?',
+    options: [
+      'Blend human audits or diversify principles to keep drift in check.',
+      'Increase the temperature during sampling.',
+      'Remove the constitution entirely and rely on randomness.',
+      'Switch to PPO with KL penalties disabled.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The text emphasises that synthetic data can be high-bias, so teams should keep human oversight or broaden principles.',
+  },
+];
+
+<EquationSection id="equation" title="Constitutional Feedback Pipeline">
+  <p>
+    Chapter&nbsp;13 models Constitutional AI as two data-generation loops governed by a written constitution <MathInline expression={String.raw`\mathcal{C}`} />. Each loop keeps the
+    instruction prompting intact while substituting an LLM critic or judge in place of a human labeler.
+  </p>
+
+  <MathBlock
+    expression={String.raw`\begin{aligned}
+\text{Instruction Loop:}\quad &y_0 = \pi_{\text{draft}}(x),\\
+&\text{for } i=0..n-1:\quad c_i \sim \mathcal{C},\; y_{i+1} = \text{Revise}(x, y_i, c_i)\\
+&\mathcal{D}_{\text{instr}} \leftarrow \mathcal{D}_{\text{instr}} \cup \{(x, y_n)\}\\[4pt]
+\text{Preference Loop:}\quad &c \sim \mathcal{C},\; (y^A, y^B) \sim \mathcal{D}_{\text{rlhf}}\\
+&r = \text{Judge}(x, y^A, y^B, c),\; \mathcal{D}_{\text{pref}} \leftarrow \mathcal{D}_{\text{pref}} \cup \{(x, y^A, y^B, r)\}
+\end{aligned}`}
+  />
+
+  <ModuleCallout>
+    The chapter stresses that these loops are cheap to run (sub-cent per judgement) but can import the biases of the source model and constitution. Blend principles and human audits to control drift.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Why AI Feedback Works">
+  <p>
+    Constitutional AI is a specific instance of RL from AI Feedback (RLAIF). We swap costly human critiques for a calibrated rubric applied by a large model. Because the rubric is public and repeatable, data quality is higher (low noise) even if it carries the constitution's bias. Chapter&nbsp;13 encourages mixing a modest slice of human checks to keep that bias visible while scaling experimentation.
+  </p>
+  <p>
+    Think of the process as writing a playbook for your future reviewers. Once the playbook is in place, the same base model can self-critique, generate new instruction data, and produce preference comparisons for reward-model training. The playbook can evolve - expanding the constitution or swapping the critic model - without resetting the entire pipeline.
+  </p>
+  <ModuleCallout>
+    Claude, ChatGPT, Llama 2/3, and Nemotron all use constitution-style prompts or critic models to expand their safety data, confirming the approach scales to production systems.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Editorial Board Charter">
+  <p>
+    In a newsroom, an editorial charter states what counts as publishable. Junior writers revise their drafts until senior editors sign off. Constitutional AI mirrors this dynamic with an LLM filling the role of the editor.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Constitution Lab">
+  <p>
+    Use the tools below to assemble a constitution, compare AI versus human labelling costs, and size the critique loop you need before launching a self-improvement run.
+  </p>
+  <ConstitutionBuilder />
+  <AiFeedbackComparison />
+  <ConstitutionalIterationExplorer />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Notes">
+  <ul>
+    <li>Keep your constitution explicit: the chapter's examples use 8-16 short principles covering harmlessness, honesty, and helpfulness.</li>
+    <li>Blend data: synthetic critiques give scale, but retain periodic human audits to surface bias.</li>
+    <li>Track iterations: 2-4 critique passes per prompt usually reach parity with human review.</li>
+    <li>Version constitutions alongside model checkpoints so you can explain policy shifts.</li>
+    <li>When exporting datasets, annotate which critic model and constitution revision produced each sample.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Constitutional AI Check">
+  <p>Confirm the workflow, cost trade-offs, and practical guardrails introduced in Chapter&nbsp;13.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

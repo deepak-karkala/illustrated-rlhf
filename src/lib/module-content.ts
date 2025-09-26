@@ -8,6 +8,7 @@ const MODULE_IMPORTERS: Record<string, () => Promise<{ default: (props: any) => 
   'policy-gradients': () => import('../../content/modules/policy-gradients.mdx'),
   'direct-preference-optimization': () =>
     import('../../content/modules/direct-preference-optimization.mdx'),
+  'constitutional-ai': () => import('../../content/modules/constitutional-ai.mdx'),
 };
 
 export async function getModuleContent(slug: string) {
