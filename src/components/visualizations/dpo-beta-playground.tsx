@@ -1,10 +1,18 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAnalogy } from '@/lib/analogy-context';
 import { ControlSlider } from '@/components/visualizations/control-slider';
 import { VisualizationContainer } from '@/components/visualizations/visualization-container';
+
+export interface DpoSnapshot {
+  beta: number;
+  margin: number;
+  logitShift: number;
+  chosenWeight: number;
+  rejectedWeight: number;
+}
 
 interface CandidateSample {
   id: 'chosen' | 'rejected';
@@ -32,7 +40,11 @@ function weight(logprob: number, referenceLogprob: number, beta: number, margin:
   return Math.exp(beta * (logprob - referenceLogprob - margin));
 }
 
-export function DpoBetaPlayground(): JSX.Element {
+interface DpoBetaPlaygroundProps {
+  onSnapshot?: (snapshot: DpoSnapshot) => void;
+}
+
+export function DpoBetaPlayground({ onSnapshot }: DpoBetaPlaygroundProps = {}): JSX.Element {
   const [beta, setBeta] = useState<number>(0.1);
   const [margin, setMargin] = useState<number>(0);
   const [logitShift, setLogitShift] = useState<number>(0.6);
@@ -49,6 +61,24 @@ export function DpoBetaPlayground(): JSX.Element {
   }, [beta, margin, logitShift]);
 
   const normaliser = points.reduce((acc, item) => acc + item.w, 0);
+
+  const chosenWeight = points.find((item) => item.sample.id === 'chosen')?.w ?? 0;
+  const rejectedWeight = points.find((item) => item.sample.id === 'rejected')?.w ?? 0;
+
+  const resolvedNormaliser = normaliser === 0 ? 1 : normaliser;
+
+  useEffect(() => {
+    if (!onSnapshot) {
+      return;
+    }
+    onSnapshot({
+      beta,
+      margin,
+      logitShift,
+      chosenWeight: chosenWeight / resolvedNormaliser,
+      rejectedWeight: rejectedWeight / resolvedNormaliser,
+    });
+  }, [onSnapshot, beta, margin, logitShift, chosenWeight, rejectedWeight, resolvedNormaliser]);
 
   return (
     <VisualizationContainer

@@ -541,3 +541,44 @@
   available.
 - Extend the comparison chart with empirical metrics once PPO/DPO evaluations
   are standardised in the guide.
+
+## Issue 2.2.1 – Concept Playground Implementation (2025-09-27)
+
+### Summary
+
+- Launched the `/playground` sandbox so learners can experiment with rejection
+  sampling, PPO, and DPO side by side, following Chapters 10–12 of the RLHF
+  book.
+- Added guided experiment checklists, expected signals, and session logging to
+  turn the visualisations into a structured workflow rather than stand-alone
+  widgets.
+- Enabled CSV export plus performance summaries so learners can review or share
+  runs without storing data server-side.
+
+### Architecture Notes
+
+- New App Router page at `src/app/playground/page.tsx` renders the client-side
+  `ConceptPlayground` container.
+- `src/components/playground/concept-playground.tsx` orchestrates scenario
+  metadata, snapshot capture, comparison table, session log, and export
+  handling.
+- Extended `rejection-sampling-playground`, `ppo-training-playground`, and
+  `dpo-beta-playground` with optional `onSnapshot` callbacks and exported
+  snapshot typings so the playground can aggregate metrics in real time.
+- Added `suppressHydrationWarning` to the root `<html>` element so the theme
+  provider's runtime class toggles (light/dark) do not trigger hydration
+  mismatches that were blocking client-side navigation.
+
+### Testing & Verification
+
+- `npm run build`
+- Manual smoke test of each scenario: parameter changes refresh the latest
+  reading, recordings land in the session log, and CSV export downloads with
+  captured metrics.
+
+### Follow-ups
+
+- Consider persisting the session log to `localStorage` so reloads keep recent
+  experiments.
+- Add additional scenarios (e.g., KL regularisation sweeps) once corresponding
+  chapters ship.

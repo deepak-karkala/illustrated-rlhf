@@ -1,10 +1,19 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useAnalogy } from '@/lib/analogy-context';
 import { ControlSlider } from '@/components/visualizations/control-slider';
 import { VisualizationContainer } from '@/components/visualizations/visualization-container';
+
+export interface RejectionSamplingSnapshot {
+  completionsPerPrompt: number;
+  temperature: number;
+  topK: number;
+  strategy: 'per-prompt' | 'global';
+  selectedCount: number;
+  meanSelectedReward: number;
+}
 
 interface CompletionRow {
   prompt: string;
@@ -77,7 +86,13 @@ function selectRows(
   return updated;
 }
 
-export function RejectionSamplingPlayground(): JSX.Element {
+interface RejectionSamplingPlaygroundProps {
+  onSnapshot?: (snapshot: RejectionSamplingSnapshot) => void;
+}
+
+export function RejectionSamplingPlayground({
+  onSnapshot,
+}: RejectionSamplingPlaygroundProps = {}): JSX.Element {
   const [completionsPerPrompt, setCompletionsPerPrompt] = useState<number>(8);
   const [temperature, setTemperature] = useState<number>(0.6);
   const [topK, setTopK] = useState<number>(1);
@@ -92,6 +107,29 @@ export function RejectionSamplingPlayground(): JSX.Element {
 
   const averageReward = rows.reduce((acc, row) => acc + (row.selected ? row.reward : 0), 0);
   const selectedCount = rows.filter((row) => row.selected).length || 1;
+  const meanSelectedReward = averageReward / selectedCount;
+
+  useEffect(() => {
+    if (!onSnapshot) {
+      return;
+    }
+    onSnapshot({
+      completionsPerPrompt,
+      temperature,
+      topK,
+      strategy,
+      selectedCount,
+      meanSelectedReward,
+    });
+  }, [
+    onSnapshot,
+    completionsPerPrompt,
+    temperature,
+    topK,
+    strategy,
+    selectedCount,
+    meanSelectedReward,
+  ]);
 
   return (
     <VisualizationContainer
@@ -184,9 +222,9 @@ export function RejectionSamplingPlayground(): JSX.Element {
           </tbody>
         </table>
         <p className="rounded-xl border border-dashed border-border bg-muted/40 p-4 text-xs text-muted-foreground">
-          Estimated fine-tuning reward ≈ {(averageReward / selectedCount).toFixed(2)} using{' '}
-          {selectedCount} selected completions. Chapter 10 emphasises keeping enough diversity
-          (temperature and N) while relying on the reward model to filter quality.
+          Estimated fine-tuning reward ≈ {meanSelectedReward.toFixed(2)} using {selectedCount}{' '}
+          selected completions. Chapter 10 emphasises keeping enough diversity (temperature and N)
+          while relying on the reward model to filter quality.
         </p>
       </div>
     </VisualizationContainer>

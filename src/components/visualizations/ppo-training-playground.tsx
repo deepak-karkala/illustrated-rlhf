@@ -7,6 +7,14 @@ import { useAnalogy } from '@/lib/analogy-context';
 import { ControlSlider } from '@/components/visualizations/control-slider';
 import { VisualizationContainer } from '@/components/visualizations/visualization-container';
 
+export interface PpoSnapshot {
+  learningRate: number;
+  clip: number;
+  klPenalty: number;
+  finalClippedRatio: number;
+  finalUnclippedRatio: number;
+}
+
 interface TrajectoryPoint {
   step: number;
   clipped: number;
@@ -34,7 +42,13 @@ function simulateTrajectory(
   return points;
 }
 
-export function PpoTrainingPlayground(): JSX.Element {
+interface PpoTrainingPlaygroundProps {
+  onSnapshot?: (snapshot: PpoSnapshot) => void;
+}
+
+export function PpoTrainingPlayground({
+  onSnapshot,
+}: PpoTrainingPlaygroundProps = {}): JSX.Element {
   const [learningRate, setLearningRate] = useState<number>(0.08);
   const [clip, setClip] = useState<number>(0.2);
   const [klPenalty, setKlPenalty] = useState<number>(0.008);
@@ -85,6 +99,19 @@ export function PpoTrainingPlayground(): JSX.Element {
   }, [data]);
 
   const finalRatio = data[data.length - 1];
+
+  useEffect(() => {
+    if (!onSnapshot || !finalRatio) {
+      return;
+    }
+    onSnapshot({
+      learningRate,
+      clip,
+      klPenalty,
+      finalClippedRatio: finalRatio.clipped,
+      finalUnclippedRatio: finalRatio.unclipped,
+    });
+  }, [onSnapshot, learningRate, clip, klPenalty, finalRatio]);
 
   return (
     <VisualizationContainer
