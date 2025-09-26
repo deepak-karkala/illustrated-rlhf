@@ -11,6 +11,7 @@ const MODULE_IMPORTERS: Record<string, () => Promise<{ default: (props: any) => 
   'constitutional-ai': () => import('../../content/modules/constitutional-ai.mdx'),
   'reasoning-training': () => import('../../content/modules/reasoning-training.mdx'),
   'tool-use': () => import('../../content/modules/tool-use.mdx'),
+  'advanced-topics': () => import('../../content/modules/advanced-topics.mdx'),
 };
 
 export async function getModuleContent(slug: string) {

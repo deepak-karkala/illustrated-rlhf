@@ -1,0 +1,155 @@
+import {
+  EquationSection,
+  IntuitionSection,
+  AnalogySection,
+  VisualizationSection,
+  TakeawaysSection,
+  AssessmentSection,
+  ModuleCallout,
+} from '@/components/modules/module-layout';
+import { MathBlock } from '@/components/modules/math-block';
+import { MathInline } from '@/components/modules/math-inline';
+import { AnalogyComparison } from '@/components/modules/analogy-comparison';
+import { AssessmentQuiz } from '@/components/modules/assessment-quiz';
+import { SyntheticDataPlanner } from '@/components/visualizations/synthetic-data-planner';
+import { EvaluationDashboard } from '@/components/visualizations/evaluation-dashboard';
+import { OveroptimizationMonitor } from '@/components/visualizations/overoptimization-monitor';
+
+export const analogyItems = [
+  {
+    label: 'Editorial board',
+    description:
+      'Editors balance synthetic drafts, reader surveys, and brand voice. Chapters 16-20 ask RLHF teams to do the same with data, evals, and UX.',
+  },
+  {
+    label: 'Product lab',
+    description:
+      'A lab monitors metrics, overfitting, and customer feedback before shipping. Advanced RLHF folds these loops into deployment pipelines.',
+  },
+];
+
+export const assessmentQuestions = [
+  {
+    id: 'synthetic-data',
+    prompt: 'What caution does Chapter 16 raise when scaling synthetic data?',
+    options: [
+      'Track bias and keep human anchors so synthetic datasets do not drift away from user needs.',
+      'Avoid mixing human labels entirely.',
+      'Synthetic data must be more expensive than human data to be useful.',
+      'Distillation is not compatible with synthetic examples.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 16 emphasises bias audits and human anchors when distilling from larger teachers or constitutions.',
+  },
+  {
+    id: 'evaluation',
+    prompt: 'Which evaluation practice does Chapter 17 recommend?',
+    options: [
+      'Use multi-metric dashboards (safety, helpfulness, latency) and refresh them for each release.',
+      'Rely on a single headline benchmark and ignore UX metrics.',
+      'Publish scores without checking for data contamination.',
+      'Disable automated testing during deployment.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'The chapter surveys evaluation frameworks (Inspect AI, LightEval, HolisticEval) and advocates dashboards covering multiple dimensions.',
+  },
+  {
+    id: 'goodhart',
+    prompt: 'According to Chapter 18, how can teams mitigate reward model over-optimisation?',
+    options: [
+      'Use reward ensembles, add constraints, or rotate proxies when eval gaps grow.',
+      'Increase the learning rate indefinitely.',
+      'Stop evaluating on hold-out benchmarks.',
+      'Only use a single reward model trained on the final data.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 18 cites ensemble techniques and constrained RLHF as practical mitigations for proxy drift.',
+  },
+  {
+    id: 'style',
+    prompt: 'What trade-off from Chapter 19 should UX designers monitor?',
+    options: [
+      'Balancing style (persona, tone) with information density so users feel heard without losing facts.',
+      'Removing all stylistic control to maximise brevity.',
+      'Focusing only on persona without evaluating accuracy.',
+      'Ignoring style guidelines entirely.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 19 discusses persona design, emphasising clarity vs warmth trade-offs and the need for A/B testing.',
+  },
+  {
+    id: 'product',
+    prompt: 'What deployment consideration does Chapter 20 highlight?',
+    options: [
+      'Ship with observability hooks, safety rails, and feedback loops to iterate quickly.',
+      'Deploy once and avoid post-launch telemetry.',
+      'Rely on manual QA without analytics.',
+      'Ship model weights without documentation.',
+    ],
+    answerIndex: 0,
+    explanation:
+      'Chapter 20 focuses on product readiness: logging, safeguards, and continuous updates based on user feedback.',
+  },
+];
+
+<EquationSection id="equation" title="Distillation & Synthetic Data">
+  <p>
+    Chapter&nbsp;16 describes teacher-student distillation where a large model generates synthetic pairs and a smaller student is finetuned on them alongside human data.
+    With mixture weights <MathInline expression={String.raw`\lambda_{\text{human}}`} /> and <MathInline expression={String.raw`\lambda_{\text{synthetic}}`} />, the loss combines both sources.
+  </p>
+
+  <MathBlock
+    expression={String.raw`\mathcal{L} = \lambda_{\text{human}} \cdot \mathbb{E}_{(x, y) \sim \mathcal{D}_{\text{human}}} [-\log \pi_{\theta}(y \mid x)] + \lambda_{\text{synthetic}} \cdot \mathbb{E}_{(x, \tilde{y}) \sim \mathcal{D}_{\text{synthetic}}} [-\log \pi_{\theta}(\tilde{y} \mid x)]`}
+  />
+
+  <ModuleCallout>
+    Tune the weights as synthetic scale grows. Chapter 16 recommends keeping human anchors to avoid bias creep.
+  </ModuleCallout>
+</EquationSection>
+
+<IntuitionSection id="intuition" title="Balancing Evaluation & Over-Optimisation">
+  <p>
+    Chapters 17 and 18 stress that post-training can overfit to proxy objectives. Teams should compare proxy rewards against hold-out evaluations and add guardrails (ensembles, constraints) when gaps widen. Evaluation suites such as Inspect AI or LightEval help track regressions across safety, helpfulness, and specialised domains.
+  </p>
+  <p>
+    Styling and UX (Chapter 19) add another dimension: persona tuning affects information density and user trust. Chapter 20 then bridges the gap to product deployment-instrumentation, fast feedback loops, and cross-functional collaboration keep models improving after launch.
+  </p>
+  <ModuleCallout>
+    Advanced RLHF is multidisciplinary; coordinate data, evaluation, and product teams so synthetic generation, benchmarking, and UX updates reinforce each other.
+  </ModuleCallout>
+</IntuitionSection>
+
+<AnalogySection id="analogy" title="Analogy: Editorial Board & Product Lab">
+  <p>
+    An editorial board manages drafts, fact-checking, and audience surveys before publishing. Product labs run usability studies and metrics dashboards before shipping. Advanced RLHF combines both mindsets.
+  </p>
+  <AnalogyComparison items={analogyItems} />
+</AnalogySection>
+
+<VisualizationSection id="visualization" title="Advanced Deployment Lab">
+  <p>
+    Use the planners to balance synthetic vs human data, read evaluation dashboards, and monitor proxy drift while preparing production launches.
+  </p>
+  <SyntheticDataPlanner />
+  <EvaluationDashboard />
+  <OveroptimizationMonitor />
+</VisualizationSection>
+
+<TakeawaysSection id="takeaways" title="Operational Playbook">
+  <ul>
+    <li>Mix synthetic and human data thoughtfully; log provenance for audits.</li>
+    <li>Adopt multi-metric evaluation dashboards and refresh them per release.</li>
+    <li>Watch proxy vs eval gaps to catch Goodhart effects early.</li>
+    <li>Design personas and information density together; validate with UX research.</li>
+    <li>Instrument deployments with feedback loops, safety guardrails, and documentation.</li>
+  </ul>
+</TakeawaysSection>
+
+<AssessmentSection id="assessment" title="Advanced Topics Check">
+  <p>Confirm understanding of synthetic scaling, evaluation frameworks, and deployment practices from Chapters 16-20.</p>
+  <AssessmentQuiz questions={assessmentQuestions} />
+</AssessmentSection>

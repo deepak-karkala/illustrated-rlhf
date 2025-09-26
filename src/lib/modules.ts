@@ -611,6 +611,61 @@ export const MODULES: ModuleNavItem[] = [
       },
     ],
   },
+  {
+    id: 'module-advanced-topics',
+    slug: 'advanced-topics',
+    title: 'Advanced RLHF Topics',
+    description: 'Synthetic data, evaluation, over-optimisation, style trade-offs, and UX',
+    phase: 'phase-3',
+    analogy: 'advanced',
+    prerequisites: ['module-tool-use'],
+    estimated_time: 45,
+    difficulty: 'advanced',
+    tags: ['synthetic-data', 'evaluation', 'ux'],
+    summary:
+      'Integrate Chapters 16–20: distillation, evaluation dashboards, over-optimisation risks, stylistic control, and product deployment practices.',
+    order: 11,
+    progress: 0,
+    status: 'available',
+    sections: [
+      {
+        id: 'equation',
+        type: 'equation',
+        title: 'Distillation & Synthetic Data',
+        eyebrow: 'Equation',
+      },
+      {
+        id: 'intuition',
+        type: 'intuition',
+        title: 'Balancing Evaluation & Over-Optimisation',
+        eyebrow: 'Intuition',
+      },
+      {
+        id: 'analogy',
+        type: 'analogy',
+        title: 'Analogy: Editorial Board & Product Lab',
+        eyebrow: 'Analogy',
+      },
+      {
+        id: 'visualization',
+        type: 'visualization',
+        title: 'Advanced Deployment Lab',
+        eyebrow: 'Visualization',
+      },
+      {
+        id: 'takeaways',
+        type: 'takeaways',
+        title: 'Operational Playbook',
+        eyebrow: 'Summary',
+      },
+      {
+        id: 'assessment',
+        type: 'assessment',
+        title: 'Advanced Topics Check',
+        eyebrow: 'Assessment',
+      },
+    ],
+  },
 ];
 
 export function getModuleBySlug(slug: string): ModuleNavItem | undefined {

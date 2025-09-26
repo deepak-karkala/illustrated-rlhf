@@ -705,3 +705,42 @@
 
 - Replace heuristic latency curves with telemetry once available.
 - Add editable workflow templates sourced from real MCP deployments.
+
+## Issue 3.1.4 – Advanced Topics Integration (2025-09-28)
+
+### Summary
+
+- Added the advanced topics module spanning Chapters 16–20: synthetic
+  data/distillation, evaluation frameworks, reward over-optimisation, style
+  trade-offs, and product deployment.
+- Integrated planners for data blending, evaluation dashboards, and proxy-gap
+  monitoring so teams can practise Chapter 16–20 workflows.
+- Emphasised cross-functional coordination across data, evaluation, and product
+  UX.
+
+### Architecture Notes
+
+- New MDX content at `content/modules/advanced-topics.mdx` imports the advanced
+  visualisations.
+- `src/lib/modules.ts` and `src/lib/module-content.ts` register the
+  `advanced-topics` slug so the navigation includes the chapter.
+- Visualisations:
+  - `SyntheticDataPlanner`
+    (`src/components/visualizations/synthetic-data-planner.tsx`) projects
+    quality, bias, and cost for human vs synthetic blends.
+  - `EvaluationDashboard`
+    (`src/components/visualizations/evaluation-dashboard.tsx`) mirrors
+    multi-metric evaluation snapshots from Chapter 17 and 19.
+  - `OveroptimizationMonitor`
+    (`src/components/visualizations/overoptimization-monitor.tsx`) measures
+    proxy vs eval gaps and risk indicators (Chapter 18).
+
+### Testing & Verification
+
+- `npm run build`
+- Manual review of `/modules/advanced-topics` interactions and quiz logic.
+
+### Follow-ups
+
+- Replace heuristic metrics with real telemetry once available.
+- Add UX A/B testing templates as product feedback loops mature.
