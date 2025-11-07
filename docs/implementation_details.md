@@ -744,3 +744,117 @@
 
 - Replace heuristic metrics with real telemetry once available.
 - Add UX A/B testing templates as product feedback loops mature.
+
+## Issue 3.1.5 – Sidebar Simplification (2025-09-28)
+
+### Summary
+
+- Trimmed the module sidebar cards down to the essentials (title + description)
+  to match the updated visual direction.
+- Removed analogy tags, status badges, avatars, and progress indicators for a
+  calmer left rail that spotlights chapter copy.
+- Flattened the remaining card styling by dropping the analogy ring highlight so
+  every chapter tile shares the same border weight.
+
+### Architecture Notes
+
+- Simplified `SidebarNav` (`src/components/layout/sidebar-nav.tsx`) so each
+  `Link` only renders the textual metadata from `MODULES`.
+- Dropped dependencies on `AnalogyPill`, `Badge`, and `Progress`, reducing
+  client-side work and Tailwind complexity in the navigation component.
+- Removed the outdated “Phase 1” heading to avoid implying phase-based grouping
+  until new content-based groupings are defined.
+
+### Testing & Verification
+
+- Manual verification in the modules route to confirm only titles and
+  descriptions render inside the chapter list.
+
+### Follow-ups
+
+- Consider adding subtle hover affordances (e.g., chevron) if future usability
+  studies show users miss interactivity cues without the extra adornments.
+
+## Issue 3.1.6 – Module Card Simplification (2025-09-28)
+
+### Summary
+
+- Converted the learning-module grid cards into single-click targets so each
+  tile links directly to its module page.
+- Removed secondary data (availability tag, estimated time, difficulty, and
+  progress bar) to keep the grid text-first and visually aligned with the new
+  sidebar.
+
+### Architecture Notes
+
+- Updated `src/app/modules/page.tsx` to wrap every `Card` in a `Link` pointing
+  at `/modules/[slug]`, including focus-visible rings for accessibility.
+- Dropped the `Badge`, `Progress`, and `CardContent` usage, leaving only the
+  shared `CardHeader` with title/description to describe each chapter.
+
+### Testing & Verification
+
+- Manually clicked through modules on the index page to ensure navigation routes
+  to the expected module.
+
+### Follow-ups
+
+- Consider reintroducing lightweight metadata (e.g., estimated time) via a
+  tooltip or secondary view if learners request more planning context.
+
+## Issue 3.1.7 – Home Learning Path Links (2025-09-28)
+
+### Summary
+
+- Wired the landing page “Learning Path” cards to open their respective module
+  pages so the hero CTA continues seamlessly into the curriculum.
+- Synced the card metadata with the canonical module definitions so status
+  labels (e.g., coming soon) stay accurate without manual updates.
+
+### Architecture Notes
+
+- `src/app/page.tsx` now imports `MODULES`, derives the ordered learning path
+  from the README-specified slug sequence, and wraps available entries in
+  `next/link`.
+- Non-available modules render with `aria-disabled` blocks while available cards
+  gain hover + focus affordances and a contextual action label (“Start here” for
+  the introduction, “View module” otherwise).
+
+### Testing & Verification
+
+- Manually clicked the learning-path cards to confirm navigation routes to
+  `/modules/[slug]` for available chapters and that coming-soon cards are not
+  interactive.
+
+### Follow-ups
+
+- Expand the landing path to cover additional chapters (e.g., DPO) once product
+  verifies the ideal onboarding sequence.
+
+## Issue 3.1.8 – Analogy Visual Presentation (2025-09-28)
+
+### Summary
+
+- Converted the four analogy tiles on the home page from interactive selectors
+  into static illustration cards so they no longer imply navigation or hidden
+  state changes.
+- Updated the section copy to clarify that these visuals simply introduce the
+  storytelling lenses used throughout the guide.
+
+### Architecture Notes
+
+- `AnalogyCard` in `src/components/analogies/analogy-visuals.tsx` now renders
+  semantic `article` blocks without `button` semantics or `setAnalogy` calls—the
+  cards only showcase art + copy.
+- Removed the pressed/active styling and tweaked the descriptive paragraph to
+  emphasize passive consumption.
+
+### Testing & Verification
+
+- Manual check on the home page confirmed the cards no longer show hover/focus
+  interactivity and that copy communicates their illustrative purpose.
+
+### Follow-ups
+
+- Reintroduce an explicit analogy selector elsewhere (e.g., inside modules) if
+  future content requires learner-controlled perspective changes.

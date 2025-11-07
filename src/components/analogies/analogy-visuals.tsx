@@ -159,22 +159,11 @@ interface AnalogyCardProps {
 
 function AnalogyCard({ type }: AnalogyCardProps): JSX.Element {
   const details = useAnalogyDetails(type);
-  const { activeAnalogy, setAnalogy } = useAnalogy();
   const Visual = VISUAL_COMPONENTS[type];
   const copy = ANALOGY_COPY[type];
 
-  const isActive = activeAnalogy === type;
-
   return (
-    <button
-      type="button"
-      onClick={() => setAnalogy(type)}
-      className={cn(
-        'flex h-full flex-col gap-4 rounded-2xl border bg-card p-5 text-left transition hover:border-foreground/40 focus-ring',
-        isActive ? 'border-foreground shadow-lg shadow-foreground/10' : 'border-border'
-      )}
-      aria-pressed={isActive}
-    >
+    <article className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-left shadow-sm">
       <Visual />
       <div className="space-y-1">
         <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
@@ -184,7 +173,7 @@ function AnalogyCard({ type }: AnalogyCardProps): JSX.Element {
         <h3 className="text-lg font-semibold text-foreground">{details.name}</h3>
         <p className="text-sm text-muted-foreground">{copy.description}</p>
       </div>
-    </button>
+    </article>
   );
 }
 
@@ -200,8 +189,8 @@ export function AnalogyShowcase({ className }: AnalogyShowcaseProps): JSX.Elemen
       <header className="space-y-2 text-center">
         <h2 className="heading-2">Analogy Visuals</h2>
         <p className="body text-muted-foreground">
-          Each context gives RLHF a different story arc. Explore the visuals and pick the lens that
-          resonates.
+          These illustrations introduce the narrative lenses we use across the guide—browse them to
+          understand each storytelling perspective.
         </p>
       </header>
       <div className="grid gap-6 md:grid-cols-2">

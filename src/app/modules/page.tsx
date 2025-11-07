@@ -1,8 +1,7 @@
+import Link from 'next/link';
 import type { Metadata } from 'next';
 
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { MODULES } from '@/lib/modules';
 
 export const metadata: Metadata = {
@@ -23,27 +22,19 @@ export default function ModulesPage(): JSX.Element {
 
       <div className="grid gap-5 md:grid-cols-2">
         {MODULES.map((moduleEntry) => (
-          <Card key={moduleEntry.id} className="border-border">
-            <CardHeader>
-              <CardTitle>{moduleEntry.title}</CardTitle>
-              <CardDescription>{moduleEntry.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <Badge variant={moduleEntry.status === 'available' ? 'success' : 'warning'}>
-                  {moduleEntry.status === 'available' ? 'Available' : 'Coming soon'}
-                </Badge>
-                <span>Estimated time: {moduleEntry.estimated_time} min</span>
-                <span>Difficulty: {moduleEntry.difficulty}</span>
-              </div>
-              <div>
-                <Progress value={moduleEntry.progress} />
-                <span className="mt-1 block text-right text-xs text-muted-foreground">
-                  {moduleEntry.progress}% complete
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+          <Link
+            key={moduleEntry.id}
+            href={`/modules/${moduleEntry.slug}`}
+            className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+            aria-label={`Open module ${moduleEntry.title}`}
+          >
+            <Card className="h-full border-border transition hover:border-primary/40 hover:bg-accent/40 group-hover:shadow-md">
+              <CardHeader>
+                <CardTitle>{moduleEntry.title}</CardTitle>
+                <CardDescription>{moduleEntry.description}</CardDescription>
+              </CardHeader>
+            </Card>
+          </Link>
         ))}
       </div>
     </div>

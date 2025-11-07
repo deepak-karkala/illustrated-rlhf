@@ -5,40 +5,10 @@ import { Menu } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-import { AnalogyPill } from '@/components/analogies/analogy-pill';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { useAnalogy } from '@/lib/analogy-context';
-import { MODULES, type ModuleNavItem } from '@/lib/modules';
+import { MODULES } from '@/lib/modules';
 import { cn } from '@/lib/utils';
-
-function getAnalogyColor(analogy: ModuleNavItem['analogy']): string {
-  switch (analogy) {
-    case 'writing':
-      return 'bg-analogy-writing-500';
-    case 'reasoning':
-      return 'bg-analogy-reasoning-500';
-    case 'advanced':
-      return 'bg-analogy-advanced-500';
-    case 'atari':
-    default:
-      return 'bg-analogy-atari-500';
-  }
-}
-
-function getPhaseLabel(phase: ModuleNavItem['phase']): string {
-  switch (phase) {
-    case 'phase-1':
-      return 'Core Loop';
-    case 'phase-2':
-      return 'Foundation';
-    case 'phase-3':
-      return 'Advanced';
-    default:
-      return 'Module';
-  }
-}
 
 export function SidebarNav(): JSX.Element {
   const pathname = usePathname();
@@ -77,17 +47,10 @@ export function SidebarNav(): JSX.Element {
           isMobileOpen ? 'block' : 'hidden lg:block'
         )}
       >
-        <h2 className="text-sm font-semibold text-muted-foreground">Phase 1 • Core RLHF Loop</h2>
-        <ul className="mt-3 space-y-2">
+        <ul className="space-y-2">
           {navItems.map((item) => {
             const isActive = item.slug === currentSlug;
             const matchesAnalogy = item.analogy === activeAnalogy;
-            const indicatorClass = cn({
-              'bg-analogy-writing-500': item.analogy === 'writing',
-              'bg-analogy-reasoning-500': item.analogy === 'reasoning',
-              'bg-analogy-advanced-500': item.analogy === 'advanced',
-              'bg-analogy-atari-500': item.analogy === 'atari',
-            });
 
             return (
               <li key={item.id}>
@@ -96,40 +59,12 @@ export function SidebarNav(): JSX.Element {
                   className={cn(
                     'block rounded-lg border border-transparent p-3 transition hover:border-border hover:bg-accent',
                     isActive && 'border-border bg-accent/60',
-                    matchesAnalogy ? 'ring-2 ring-inset ring-primary/40' : 'opacity-90'
+                    matchesAnalogy ? 'opacity-100' : 'opacity-90'
                   )}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.description}</p>
-                    </div>
-                    <span
-                      className={cn(
-                        'flex h-8 w-8 items-center justify-center rounded-full text-sm text-white',
-                        getAnalogyColor(item.analogy)
-                      )}
-                      aria-hidden="true"
-                    >
-                      {item.title.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <Badge variant={item.status === 'available' ? 'success' : 'warning'}>
-                      {item.status === 'available' ? 'Available' : 'Coming soon'}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {getPhaseLabel(item.phase)}
-                    </span>
-                  </div>
-                  <div className="mt-2">
-                    <AnalogyPill type={item.analogy} />
-                  </div>
-                  <div className="mt-3">
-                    <Progress value={item.progress} indicatorClassName={indicatorClass} />
-                    <span className="mt-1 block text-right text-[11px] text-muted-foreground">
-                      {item.progress}% complete
-                    </span>
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{item.title}</p>
+                    <p className="text-xs text-muted-foreground">{item.description}</p>
                   </div>
                 </Link>
               </li>
