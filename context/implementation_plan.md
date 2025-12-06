@@ -820,6 +820,58 @@
 **Milestone**: Week 24  
 **Duration**: 2 weeks
 
+#### **Issue 4.2.1: Documentation and Help System**
+
+- **Epic**: Launch Preparation
+- **Labels**: `documentation`, `help`, `medium-priority`
+- **Milestone**: Week 23
+- **Description**: Create comprehensive documentation and user help system
+- **Acceptance Criteria**:
+  - User guide for navigation and features
+  - Technical documentation for contributors and developers
+  - FAQ covering common questions and troubleshooting
+  - Video tutorials for key features and concepts
+  - Troubleshooting guide with common issues and solutions
+  - API documentation for any public interfaces
+  - Contributing guidelines for open source contributions
+  - Code of conduct and community guidelines
+- **Testing**:
+  - Documentation accuracy and completeness verification
+  - Video tutorial effectiveness with test users
+  - FAQ coverage validation against actual user questions
+  - Technical documentation accuracy for developers
+- **Definition of Done**:
+  - Complete documentation available and accessible
+  - Users can self-serve for common issues effectively
+  - Clear contribution guidelines established
+  - Video content enhances learning experience
+
+#### **Issue 4.2.2: Final Accessibility Audit**
+
+- **Epic**: Launch Preparation
+- **Labels**: `accessibility`, `audit`, `high-priority`
+- **Milestone**: Week 23
+- **Description**: Complete final accessibility audit and remediation
+- **Acceptance Criteria**:
+  - WCAG 2.1 AA compliance verification across all pages
+  - Screen reader compatibility testing (NVDA, JAWS, VoiceOver)
+  - Keyboard navigation audit for all interactive elements
+  - Color contrast validation for all color combinations
+  - Alternative text for all visual content including visualizations
+  - Focus management for dynamic content
+  - Semantic HTML structure verification
+  - ARIA labels and descriptions for complex interactions
+- **Testing**:
+  - Automated accessibility testing with axe-core
+  - Manual testing with multiple assistive technologies
+  - User testing with people who use assistive technologies
+  - Color blindness simulation testing
+- **Definition of Done**:
+  - WCAG 2.1 AA compliance achieved and verified
+  - Assistive technology compatibility confirmed by real users
+  - Inclusive experience for all users regardless of abilities
+  - Accessibility documentation and guidelines established
+
 #### **Issue 4.2.3: Production Deployment & Launch**
 
 - **Epic**: Launch Preparation
@@ -1101,57 +1153,4 @@ launch when:
 **Total Estimated Timeline**: 24 weeks  
 **Total GitHub Issues**: 24 major issues + verification steps  
 **Ready for Claude Code**: ✅  
-**Vercel Integration**: Early verification included ✅1: Documentation and Help
-System\*\*
-
-- **Epic**: Launch Preparation
-- **Labels**: `documentation`, `help`, `medium-priority`
-- **Milestone**: Week 23
-- **Description**: Create comprehensive documentation and user help system
-- **Acceptance Criteria**:
-  - User guide for navigation and features
-  - Technical documentation for contributors and developers
-  - FAQ covering common questions and troubleshooting
-  - Video tutorials for key features and concepts
-  - Troubleshooting guide with common issues and solutions
-  - API documentation for any public interfaces
-  - Contributing guidelines for open source contributions
-  - Code of conduct and community guidelines
-- **Testing**:
-  - Documentation accuracy and completeness verification
-  - Video tutorial effectiveness with test users
-  - FAQ coverage validation against actual user questions
-  - Technical documentation accuracy for developers
-- **Definition of Done**:
-  - Complete documentation available and accessible
-  - Users can self-serve for common issues effectively
-  - Clear contribution guidelines established
-  - Video content enhances learning experience
-
-#### **Issue 4.2.2: Final Accessibility Audit**
-
-- **Epic**: Launch Preparation
-- **Labels**: `accessibility`, `audit`, `high-priority`
-- **Milestone**: Week 23
-- **Description**: Complete final accessibility audit and remediation
-- **Acceptance Criteria**:
-  - WCAG 2.1 AA compliance verification across all pages
-  - Screen reader compatibility testing (NVDA, JAWS, VoiceOver)
-  - Keyboard navigation audit for all interactive elements
-  - Color contrast validation for all color combinations
-  - Alternative text for all visual content including visualizations
-  - Focus management for dynamic content
-  - Semantic HTML structure verification
-  - ARIA labels and descriptions for complex interactions
-- **Testing**:
-  - Automated accessibility testing with axe-core
-  - Manual testing with multiple assistive technologies
-  - User testing with people who use assistive technologies
-  - Color blindness simulation testing
-- **Definition of Done**:
-  - WCAG 2.1 AA compliance achieved and verified
-  - Assistive technology compatibility confirmed by real users
-  - Inclusive experience for all users regardless of abilities
-  - Accessibility documentation and guidelines established
-
-#### \*\*Issue 4.2.
+**Vercel Integration**: Early verification included ✅

@@ -858,3 +858,35 @@
 
 - Reintroduce an explicit analogy selector elsewhere (e.g., inside modules) if
   future content requires learner-controlled perspective changes.
+
+## Issue 3.1.9 – Theme Toggle Hydration Regression (2025-12-06)
+
+### Summary
+
+- Theme toggle stayed disabled because the dev HTML referenced `vendor.js` /
+  `framer.js` bundles that were never emitted, blocking hydration of client-side
+  code.
+- The bad references came from a custom Webpack splitChunks config that also ran
+  in development, leading to 404s and MIME errors for the injected script tags.
+- Gated the chunk-splitting tweaks to production builds only so the dev server
+  reuses Next.js defaults and ships the JS needed for interactivity.
+
+### Architecture Notes
+
+- Updated `next.config.js` to accept the `dev` flag and skip the custom
+  `runtimeChunk` + `splitChunks` block when running `next dev`.
+- Left the SVG loader untouched to keep existing asset support intact.
+
+### Testing & Verification
+
+- Ran a headless Playwright check against `npm run dev` on port 3100; verified
+  the theme toggle enables after hydration and toggles the `documentElement`
+  class to `dark` on click.
+- Confirmed the browser console no longer logs 404/MIME errors for missing
+  `_next/chunks/vendor.js` or `_next/chunks/framer.js` during the check.
+
+### Follow-ups
+
+- Consider removing the unsupported `telemetry` flag from `next.config.js` to
+  silence Next.js warnings and double-check production builds still benefit from
+  the custom splitChunks layout.
