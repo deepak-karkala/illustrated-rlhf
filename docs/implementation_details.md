@@ -966,3 +966,26 @@
 
 - Redeploy to confirm the missing-functions error is resolved; add back a
   `functions` block only if explicit overrides are needed for future API routes.
+
+## Issue 3.1.13 – Vercel Ignore Cleanup (2025-12-08)
+
+### Summary
+
+- Fixed build-time module resolution failures on Vercel by allowing
+  `tsconfig.json` (and other config files) to be uploaded instead of being
+  ignored.
+
+### Architecture Notes
+
+- Trimmed `.vercelignore` to stop excluding configuration files so the Next.js
+  build receives the path alias configuration needed for imports like
+  `@/components/layout/...`.
+
+### Testing & Verification
+
+- Not run (config-only change). Expect validation on the next Vercel deployment.
+
+### Follow-ups
+
+- Redeploy to confirm alias resolution works in the Vercel build; avoid ignoring
+  critical config files in `.vercelignore` going forward.

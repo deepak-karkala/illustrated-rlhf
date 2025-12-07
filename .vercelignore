@@ -108,11 +108,3 @@ storybook-static/
 .prettierignore
 .npmrc
 .nvmrc
-
-# Misc development files
-.sentryclirc
-.env.test
-jest.config.js
-playwright.config.ts
-tsconfig.json
-next.config.js should NOT be ignored
