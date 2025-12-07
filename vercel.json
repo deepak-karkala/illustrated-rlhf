@@ -1,22 +1,10 @@
 {
-  "name": "illustrated-rlhf",
   "version": 2,
-  "public": false,
-  "projectSettings": {
-    "buildCommand": "npm run build",
-    "devCommand": "npm run dev",
-    "installCommand": "npm install",
-    "framework": "nextjs"
-  },
-  "env": [
-    {
-      "key": "NEXT_PUBLIC_SITE_URL",
-      "value": "https://illustrated-rlhf.vercel.app",
-      "type": "system"
-    }
-  ],
-  "buildOutputDirectory": ".next",
+  "name": "illustrated-rlhf",
   "regions": ["sfo1", "iad1", "lhr1", "hnd1"],
+  "env": {
+    "NEXT_PUBLIC_SITE_URL": "https://illustrated-rlhf.vercel.app"
+  },
   "functions": {
     "api/**/*.js": {
       "maxDuration": 60

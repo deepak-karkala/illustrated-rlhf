@@ -890,3 +890,30 @@
 - Consider removing the unsupported `telemetry` flag from `next.config.js` to
   silence Next.js warnings and double-check production builds still benefit from
   the custom splitChunks layout.
+
+## Issue 3.1.10 – Vercel Deployment Config Fix (2025-12-08)
+
+### Summary
+
+- Cleaned up `vercel.json` to comply with Vercel's supported project
+  configuration schema.
+- Removed deprecated/unsupported fields and normalized environment variable
+  definition for deployments.
+
+### Architecture Notes
+
+- Updated `vercel.json` by dropping `projectSettings`, `buildOutputDirectory`,
+  and other dashboard-only flags, keeping only supported keys (version, name,
+  regions, env, functions, headers, rewrites, redirects).
+- Converted `env` from an array with `type` metadata to a simple object mapping
+  for `NEXT_PUBLIC_SITE_URL`.
+
+### Testing & Verification
+
+- Not run (configuration-only change). Verification should occur on the next
+  Vercel deployment.
+
+### Follow-ups
+
+- Trigger a fresh Vercel deployment to confirm the config validates and the site
+  builds successfully.
