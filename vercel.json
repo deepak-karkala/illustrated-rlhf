@@ -1,7 +1,9 @@
 {
-  "version": 2,
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "name": "illustrated-rlhf",
-  "regions": ["sfo1", "iad1", "lhr1", "hnd1"],
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "regions": ["iad1"],
   "env": {
     "NEXT_PUBLIC_SITE_URL": "https://illustrated-rlhf.vercel.app"
   },
@@ -56,5 +58,7 @@
       "destination": "/api/sitemap"
     }
   ],
-  "redirects": []
+  "redirects": [],
+  "trailingSlash": false,
+  "cleanUrls": true
 }

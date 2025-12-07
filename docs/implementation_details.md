@@ -917,3 +917,29 @@
 
 - Trigger a fresh Vercel deployment to confirm the config validates and the site
   builds successfully.
+
+## Issue 3.1.11 – Vercel Region Restriction Fix (2025-12-08)
+
+### Summary
+
+- Adjusted `vercel.json` to avoid multi-region Serverless deployment
+  restrictions on non-Pro plans by aligning with a known-good Vercel template.
+
+### Architecture Notes
+
+- Added Vercel schema reference and explicit Next.js build command/framework
+  entries.
+- Limited `regions` to a single location (`iad1`) to satisfy free/hobby plan
+  constraints.
+- Preserved existing security headers, API cache headers, rewrites, env mapping,
+  and function timeout; enabled `cleanUrls` and disabled `trailingSlash` per the
+  template.
+
+### Testing & Verification
+
+- Not run (configuration-only change). Validation expected during the next
+  Vercel deployment.
+
+### Follow-ups
+
+- Redeploy on Vercel to confirm the regional restriction warning is resolved.
