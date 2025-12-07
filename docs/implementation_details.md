@@ -943,3 +943,26 @@
 ### Follow-ups
 
 - Redeploy on Vercel to confirm the regional restriction warning is resolved.
+
+## Issue 3.1.12 – Vercel Functions Pattern Fix (2025-12-08)
+
+### Summary
+
+- Removed an unused `functions` pattern (`api/**/*.js`) from `vercel.json` that
+  caused deployment failures because no matching Serverless Functions exist in
+  the project.
+
+### Architecture Notes
+
+- Kept the Vercel template structure (schema, framework, build command, single
+  region, env, headers, rewrites) and dropped the erroneous `functions` block.
+
+### Testing & Verification
+
+- Not run (config-only change). Deployment should validate on the next Vercel
+  run.
+
+### Follow-ups
+
+- Redeploy to confirm the missing-functions error is resolved; add back a
+  `functions` block only if explicit overrides are needed for future API routes.

@@ -7,11 +7,6 @@
   "env": {
     "NEXT_PUBLIC_SITE_URL": "https://illustrated-rlhf.vercel.app"
   },
-  "functions": {
-    "api/**/*.js": {
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
