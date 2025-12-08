@@ -989,3 +989,27 @@
 
 - Redeploy to confirm alias resolution works in the Vercel build; avoid ignoring
   critical config files in `.vercelignore` going forward.
+
+## Issue 3.1.14 – Client Bundle Loading Fix (2025-12-08)
+
+### Summary
+
+- Restored client interactivity (theme toggle and playground tabs) by removing
+  the custom webpack chunk-splitting config that emitted
+  `/_next/chunks/vendor.js` and `framer.js` 404s.
+- Dropped the unsupported `telemetry` flag from `next.config.js` to silence
+  build warnings.
+
+### Architecture Notes
+
+- Kept SVG handling but let Next.js manage default chunking so client bundles
+  stay under `/_next/static/chunks/`, preventing hydration from breaking.
+
+### Testing & Verification
+
+- `npm run build`
+
+### Follow-ups
+
+- Redeploy to Vercel to confirm theme toggling and playground tab switching work
+  now that client bundles resolve.
