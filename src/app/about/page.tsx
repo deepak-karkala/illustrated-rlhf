@@ -484,7 +484,7 @@ export default function AboutPage(): JSX.Element {
             View on GitHub
           </a>
           <a
-            href="https://linkedin.com/in/deepakkarkala"
+            href="https://linkedin.com/in/deepak-karkala"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm transition-colors hover:bg-accent"
@@ -493,7 +493,7 @@ export default function AboutPage(): JSX.Element {
             LinkedIn
           </a>
           <a
-            href="mailto:contact@deepakkarkala.com"
+            href="mailto:dkarkala01@gmail.com"
             className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm transition-colors hover:bg-accent"
           >
             <Mail className="h-4 w-4" />
